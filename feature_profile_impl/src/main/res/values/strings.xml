@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_title">Profile</string>
+    <string name="profile_first">First name</string>
+    <string name="profile_second">Second name</string>
+    <string name="profile_last">Last name</string>
+    <string name="profile_primary_connection_name">Primary connection name</string>
+    <string name="profile_primary_connection">Primary connection</string>
+    <string name="profile_secondary_connection_name">Secondary connection name</string>
+    <string name="profile_secondary_connection">Secondary connection</string>
+    <string name="profile_save">Save</string>
+</resources>

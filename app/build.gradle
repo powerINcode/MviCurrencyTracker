@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.example.ratetrackertestspeed"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation ui.appcompat
+    implementation ui.constraintLayout
+    implementation ui.recyclerView
+    implementation ui.lifecycleFragment
+
+    implementation core.kotlin
+    implementation core.ktxCore
+    implementation core.lifecycleExtensions
+    implementation core.rxJava
+    implementation core.rxJavaAndroid
+    implementation core.rxJavaKotlin
+    implementation core.lifecycleViewModel
+    implementation core.dagger
+    implementation core.daggerAndroid
+    implementation core.daggerSupport
+    kapt core.daggerProcessor
+    kapt core.daggerCompiler
+
+    implementation data.retrofit
+    implementation data.gsonConverter
+    implementation data.retrofitRxJava
+    implementation data.gson
+
+    testImplementation test.junit
+    androidTestImplementation test.androidJunit
+    androidTestImplementation test.androidEspresso
+
+    implementation lib.core
+    implementation lib.coreNetworkApi
+    implementation lib.coreNetworkImpl
+    implementation lib.coreStorage
+
+    implementation feature.rateTrackerApi
+    implementation feature.rateTrackerImpl
+
+    implementation feature.profileApi
+    implementation feature.profileImpl
+}

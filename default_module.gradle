@@ -1,0 +1,46 @@
+apply from: "../default_module_api.gradle"
+
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+}
+
+dependencies {
+    implementation ui.appcompat
+    implementation ui.constraintLayout
+    implementation ui.recyclerView
+    implementation ui.lifecycleFragment
+
+    implementation core.kotlin
+    implementation core.ktxCore
+    implementation core.lifecycleExtensions
+    implementation core.rxJava
+    implementation core.rxJavaAndroid
+    implementation core.rxJavaKotlin
+    implementation core.lifecycleViewModel
+    implementation core.dagger
+    implementation core.daggerAndroid
+    implementation core.daggerSupport
+    kapt core.daggerProcessor
+    kapt core.daggerCompiler
+
+    implementation data.retrofit
+
+    testImplementation test.junit
+    androidTestImplementation test.androidJunit
+    androidTestImplementation test.androidEspresso
+
+    implementation lib.core
+
+    testImplementation test.junit
+    testImplementation test.liveDataTest
+    testImplementation test.mockito
+    testImplementation test.mockitoInline
+    testImplementation test.mockitoKotlin
+    testImplementation lib.coreTest
+}

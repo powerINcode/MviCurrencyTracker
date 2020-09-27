@@ -1,0 +1,5 @@
+apply from: "../default_core.gradle"
+
+dependencies {
+    implementation data.retrofit
+}

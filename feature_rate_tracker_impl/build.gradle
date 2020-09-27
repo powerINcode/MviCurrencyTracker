@@ -1,0 +1,12 @@
+apply from: "../default_module.gradle"
+
+dependencies {
+    implementation feature.rateTrackerApi
+    implementation feature.profileApi
+
+    implementation data.room
+
+    implementation lib.coreNetworkApi
+    implementation lib.coreData
+    implementation lib.coreStorage
+}

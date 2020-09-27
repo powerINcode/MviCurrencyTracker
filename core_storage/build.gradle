@@ -1,0 +1,17 @@
+apply from: "../default_core.gradle"
+android {
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+}
+dependencies {
+    implementation data.room
+    implementation data.roomRxJava
+    kapt data.roomCompiler
+
+    implementation lib.core
+}
