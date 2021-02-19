@@ -30,9 +30,7 @@ dependencies {
     implementation core.kotlin
     implementation core.ktxCore
     implementation core.lifecycleExtensions
-    implementation core.rxJava
-    implementation core.rxJavaAndroid
-    implementation core.rxJavaKotlin
+    implementation core.coroutines
     implementation core.lifecycleViewModel
     implementation core.dagger
     implementation core.daggerAndroid

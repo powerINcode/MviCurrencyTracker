@@ -3,7 +3,7 @@ apply from: "../default_core.gradle"
 dependencies {
     implementation data.retrofit
     implementation data.gsonConverter
-    implementation data.retrofitRxJava
+    implementation data.retrofitCoroutineAdapter
     implementation data.gson
 
     implementation lib.core

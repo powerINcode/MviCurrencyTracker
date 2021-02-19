@@ -10,15 +10,18 @@ import com.example.feature_rate_tracker_impl.MainScreenContract.*
 import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY
 import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY_RATE
 import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY_VALUE
-import io.reactivex.rxjava3.core.Observable
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.isActive
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
 
 class MainViewModel @Inject constructor(
-    private val rateTrackerStateReducer: MainStateReducer,
+    reducer: MainStateReducer,
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase,
     private val getMainCurrency: GetMainCurrencyRatesUseCase
-) : BaseViewModel<RateTrackerIntent, RateTrackerState, RateChange>(rateTrackerStateReducer) {
+) : BaseViewModel<RateTrackerIntent, RateTrackerState, RateChange>(reducer) {
 
     override fun getInitialState(): RateTrackerState = RateTrackerState.EMPTY
     override fun getInitialChange(): RateChange = RateChange.StartLoading
@@ -26,39 +29,37 @@ class MainViewModel @Inject constructor(
     @Volatile
     var infinityLoading: Boolean = true
 
-    override fun doInit() {
-        intentSubject.ofType(RateTrackerIntent.NavigateToInfo::class.java)
-            .subscribeTillClear {
+    override suspend fun doInit() {
+        intentSharedFlow.filterIsInstance<RateTrackerIntent.NavigateToInfo>()
+            .collectInScope {
                 navigate(NavigationCommand.FeatureCommand(ProfileFeatureConfig))
             }
 
-        intentSubject.ofType(RateTrackerIntent.AmountUpdated::class.java).map { it.amount }
-            .doOnNext { onChange(RateChange.UpdateAmount(it), RateChange.RecalculateAmounts) }
-            .subscribeTillClear()
+        intentSharedFlow.filterIsInstance<RateTrackerIntent.AmountUpdated>()
+            .map { it.amount }
+            .onEach { onChange(RateChange.UpdateAmount(it), RateChange.RecalculateAmounts) }
+            .collectInScope()
 
 
-        intentSubject.ofType(RateTrackerIntent.CurrencySelected::class.java)
-            .doOnNext {
+        intentSharedFlow.filterIsInstance<RateTrackerIntent.CurrencySelected>()
+            .onEach {
                 onChange(RateChange.SelectNewCurrency(it.currency))
             }
             .map { it.currency }
-            .startWith(
-                getMainCurrency()
-                    .map {
-                        ScreenCurrency(
-                            name = it.name,
-                            amount = DEFAULT_CURRENCY_VALUE,
-                            rate = it.rate
-                        )
-                    }.defaultIfEmpty(
-                        ScreenCurrency(
-                            DEFAULT_CURRENCY,
-                            DEFAULT_CURRENCY_VALUE,
-                            DEFAULT_CURRENCY_RATE
-                        )
+            .onStart {
+                emit(getMainCurrency()?.let {
+                    ScreenCurrency(
+                        name = it.name,
+                        amount = DEFAULT_CURRENCY_VALUE,
+                        rate = it.rate
                     )
-            )
-            .switchMap { currency ->
+                } ?: ScreenCurrency(
+                    DEFAULT_CURRENCY,
+                    DEFAULT_CURRENCY_VALUE,
+                    DEFAULT_CURRENCY_RATE
+                ))
+            }
+            .flatMapLatest { currency ->
                 observeCurrencyRates(currency.name)
                     .onDataAvailable {
                         onChange(
@@ -70,24 +71,28 @@ class MainViewModel @Inject constructor(
                     .onDataError { onChange(RateChange.Error) }
                     .onDataNotError { onChange(RateChange.HideError) }
                     .extractError()
-                    .doOnError {
-                        val b = 0
+                    .retryWhen { _, _ ->
+                        delay(1000)
+                        true
+
                     }
-                    .retryWhen { it.delay(1000, TimeUnit.MILLISECONDS) }
                     .takeWhile { it.loading }
-                    .repeatWhen {
-                        if (infinityLoading) {
-                            it.flatMap { Observable.timer(1000, TimeUnit.MILLISECONDS) }
-                        } else {
-                            it
-                        }
-                    }
+                    .repeatWithDelay(1000)
             }
 
-            .subscribeTillClear()
+            .collectInScope()
     }
 
-    override fun reducer(state: RateTrackerState, change: RateChange): RateTrackerState {
-        return rateTrackerStateReducer.reduce(state, change)
-    }
+    private suspend fun <T> Flow<T>.repeatWithDelay(delay: Long) =
+        if (infinityLoading) {
+            flow {
+                while (currentCoroutineContext().isActive) {
+                    this@repeatWithDelay.collect { emit(it) }
+                    delay(delay)
+                }
+
+            }
+        } else {
+            this
+        }
 }

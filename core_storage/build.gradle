@@ -10,7 +10,7 @@ android {
 }
 dependencies {
     implementation data.room
-    implementation data.roomRxJava
+    implementation data.roomCoroutine
     kapt data.roomCompiler
 
     implementation lib.core

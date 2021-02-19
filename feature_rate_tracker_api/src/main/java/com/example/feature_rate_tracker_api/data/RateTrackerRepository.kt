@@ -2,11 +2,9 @@ package com.example.feature_rate_tracker_api.data
 
 import com.example.core_data.datadelegate.Data
 import com.example.feature_rate_tracker_api.data.models.Currency
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.Flow
 
 interface RateTrackerRepository {
-    fun observeLatest(currency: String) : Observable<Data<List<Currency>>>
-    fun getMainCurrency(): Maybe<Currency>
+    suspend fun observeLatest(currency: String) : Flow<Data<List<Currency>>>
+    suspend fun getMainCurrency(): Currency?
 }

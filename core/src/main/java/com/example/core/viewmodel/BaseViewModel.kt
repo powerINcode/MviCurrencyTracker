@@ -5,25 +5,22 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.core.coroutine.onIo
+import com.example.core.coroutine.onMainThread
+import com.example.core.coroutine.startWithEmitItem
 import com.example.core.livedata.LiveEvent
 import com.example.core.livedata.MutableLiveEvent
 import com.example.core.mvi.Change
 import com.example.core.routing.NavigationCommand
 import com.example.core_data.datadelegate.Data
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicBoolean
 
-abstract class BaseViewModel<Intent, State, C: Change>(
+abstract class BaseViewModel<Intent, State, C : Change>(
     private val reducer: StateReducer<State, C>
 ) : ViewModel() {
-
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     protected val _state: MutableLiveData<State> = MutableLiveData()
     val state: LiveData<State> = _state
@@ -37,21 +34,23 @@ abstract class BaseViewModel<Intent, State, C: Change>(
     private val startChange: C by lazy { getInitialChange() }
     abstract fun getInitialChange(): C
 
-    protected val intentSubject = BehaviorSubject.create<Intent>()
-    protected val changeSubject = BehaviorSubject.create<C>()
+    protected val intentSharedFlow = MutableSharedFlow<Intent>(replay = 1)
+    protected val changeSharedFlow = MutableSharedFlow<C>(replay = 1)
 
     private val inited = AtomicBoolean(false)
 
     fun init() {
-        if (inited.compareAndSet(false, true)) {
-            doInit()
+        runBlocking {
+            if (inited.compareAndSet(false, true)) {
+                doInit()
+            }
         }
     }
 
-    protected abstract fun doInit()
+    protected abstract suspend fun doInit()
 
     fun send(intent: Intent) {
-        intentSubject.onNext(intent)
+        intentSharedFlow.tryEmit(intent)
     }
 
     fun navigate(command: NavigationCommand) {
@@ -63,58 +62,56 @@ abstract class BaseViewModel<Intent, State, C: Change>(
         _state.value = state
     }
 
-    protected fun onChange(vararg changes: C?) {
-        changes.filterNotNull().forEach { change -> changeSubject.onNext(change) }
+    protected suspend fun onChange(vararg changes: C?) {
+        changes.filterNotNull().forEach { change -> changeSharedFlow.emit(change) }
     }
 
     init {
-        changeSubject
-            .startWithItem(startChange)
-            .observeOn(Schedulers.io())
-            .concatMap {
+        changeSharedFlow
+            .startWithEmitItem(startChange)
+            .onIo()
+            .flatMapConcat {
                 if (it is com.example.core.mvi.ChangeContainer) {
-                    Observable.fromIterable(it.changes.map { it as C })
+                    flowOf(it.changes as C)
                 } else {
-                    Observable.just(it)
+                    flowOf(it as C)
                 }
             }
             .scan(startState, { state, change -> reducer.reduce(state, change) })
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeTillClear({
-                Log.e(this.javaClass.canonicalName, it.localizedMessage ?: "Empty String")
-            }, ::notify)
+            .onMainThread()
+            .collectInScope(
+                onError = {
+                    Log.e(this.javaClass.canonicalName, it.localizedMessage ?: "Empty String")
+                },
+                block = {
+                    notify(it)
+                })
     }
 
-    override fun onCleared() {
-        compositeDisposable.clear()
-        super.onCleared()
-    }
+    protected fun <T> Flow<T>.collectInScope(
+        onError: suspend FlowCollector<T>.(Throwable) -> Unit = {},
+        block: (suspend (T) -> Unit) = {}
+    ) = this.catch(onError)
+        .onEach { block(it) }
+        .launchIn(viewModelScope)
 
-    protected abstract fun reducer(state: State, change: C): State
+    protected fun <T> Flow<Data<T>>.onDataAvailable(block: suspend (T) -> Unit) =
+        this.onEach { it.data?.let { block(it) } }
 
-    protected fun <T> Observable<T>.subscribeTillClear(onError: (Throwable) -> Unit = {}, block: ((T) -> Unit) = {}) = compositeDisposable.add(this.subscribe(block, onError))
-    protected fun <T> Maybe<T>.subscribeTillClear(onError: (Throwable) -> Unit = {}, block: ((T) -> Unit) = {}) = compositeDisposable.add(this.subscribe(block, onError))
-    protected fun Completable.subscribeTillClear(onError: (Throwable) -> Unit = {}, block: (() -> Unit) = {}) = compositeDisposable.add(
-        this.subscribe({
-            block()
-        }, {
-            onError(it)
-        })
-    )
-
-    protected fun<T> Observable<Data<T>>.onDataAvailable(block: (T) -> Unit) = this.doOnNext { it.data?.let(block) }
-    protected fun<T> Observable<Data<T>>.onDataError(block: (e: Throwable) -> Unit) = this.doOnNext {
-        if (it is Data.Error) {
-            block(it.error)
+    protected fun <T> Flow<Data<T>>.onDataError(block: suspend (e: Throwable) -> Unit) =
+        this.onEach {
+            if (it is Data.Error) {
+                block(it.error)
+            }
         }
-    }
 
-    protected fun<T> Observable<Data<T>>.onDataNotError(block: (T?) -> Unit) = this.doOnNext {
+    protected fun <T> Flow<Data<T>>.onDataNotError(block: suspend (T?) -> Unit) = this.onEach {
         if (it !is Data.Error) {
             block(it.data)
         }
     }
-    protected fun<T> Observable<Data<T>>.extractError() = this.map {
+
+    protected fun <T> Flow<Data<T>>.extractError() = this.map {
         if (it is Data.Error) {
             throw it.error
         } else {

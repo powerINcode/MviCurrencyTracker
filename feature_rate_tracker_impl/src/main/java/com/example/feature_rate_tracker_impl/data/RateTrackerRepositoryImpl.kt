@@ -1,6 +1,7 @@
 package com.example.feature_rate_tracker_impl.data
 
 import android.util.Log
+import com.example.core.coroutine.onIo
 import com.example.core_data.datadelegate.Data
 import com.example.core_data.datadelegate.DataDelegate
 import com.example.core_data.datadelegate.DataManager
@@ -8,11 +9,9 @@ import com.example.core_storage.daos.CurrenciesDao
 import com.example.core_storage.models.currency.CurrencyEntity
 import com.example.feature_rate_tracker_api.data.RateTrackerRepository
 import com.example.feature_rate_tracker_api.data.models.Currency
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
@@ -25,16 +24,16 @@ internal class RateTrackerRepositoryImpl @Inject constructor(
 
     private val delegate = DataManager(object : DataDelegate<String, List<Currency>> {
 
-        override fun getFromMemory(): Maybe<List<Currency>> = Maybe.fromCallable { currencyCache }
+        override suspend fun getFromMemory(): List<Currency>? = currencyCache
 
-        override fun putToMemory(data: List<Currency>): Completable = Completable.fromAction {
+        override suspend fun putToMemory(data: List<Currency>) {
             currencyCache = data
         }
 
-        override fun getFromStorage(): Maybe<List<Currency>> = currencyDao.get()
-            .map { dao -> dao.map { entity -> Currency(name = entity.name, rate = entity.rate) } }
+        override suspend fun getFromStorage(): List<Currency>? = currencyDao.get()
+            ?.map { entity -> Currency(name = entity.name, rate = entity.rate) }
 
-        override fun putToStorage(data: List<Currency>): Completable =
+        override suspend fun putToStorage(data: List<Currency>) {
             data.map { domain ->
                 CurrencyEntity(
                     name = domain.name,
@@ -44,11 +43,12 @@ internal class RateTrackerRepositoryImpl @Inject constructor(
                 .let {
                     currencyDao.set(it)
                 }
+        }
 
-        override fun getFromNetwork(params: String): Single<List<Currency>> {
+        override suspend fun getFromNetwork(params: String): List<Currency> {
             Log.e("DOD", "getFromNetwork")
             return service.latest(params)
-                .map {
+                .let {
                     listOf(
                         Currency(
                             name = "AUD",
@@ -103,22 +103,20 @@ internal class RateTrackerRepositoryImpl @Inject constructor(
 
     })
 
-    override fun observeLatest(currency: String): Observable<Data<List<Currency>>> =
+    override suspend fun observeLatest(currency: String): Flow<Data<List<Currency>>> =
         delegate.observe(true, currency)
 
-    override fun getMainCurrency(): Maybe<Currency> =
-        currencyDao.get()
-            .flatMap {
-                if (it.isEmpty()) {
-                    Maybe.empty()
-                } else {
-                    Maybe.just(it.first())
+    override suspend fun getMainCurrency(): Currency? =
+        onIo {
+            currencyDao.get()
+                .let { currencies ->
+                    currencies?.firstOrNull()?.let {
+                        Currency(
+                            name = it.name,
+                            rate = it.rate
+                        )
+                    }
+
                 }
-            }.map {
-                Currency(
-                    name = it.name,
-                    rate = it.rate
-                )
-            }
-            .subscribeOn(Schedulers.io())
+        }
 }

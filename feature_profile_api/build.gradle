@@ -3,5 +3,5 @@ apply from: "../default_module_api.gradle"
 dependencies {
     implementation lib.core
     implementation lib.coreData
-    implementation core.rxJava
+    implementation core.coroutines
 }

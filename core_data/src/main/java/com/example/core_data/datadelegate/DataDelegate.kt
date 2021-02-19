@@ -1,16 +1,12 @@
 package com.example.core_data.datadelegate
 
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Single
-
 interface DataDelegate<Params, T> {
-    fun getFromMemory(): Maybe<T>
-    fun putToMemory(data: T): Completable
+    suspend fun getFromMemory(): T?
+    suspend fun putToMemory(data: T)
 
-    fun getFromStorage(): Maybe<T>
-    fun putToStorage(data: T): Completable
+    suspend fun getFromStorage(): T?
+    suspend fun putToStorage(data: T)
 
-    fun getFromNetwork(params: Params): Single<T>
+    suspend fun getFromNetwork(params: Params): T
 
 }

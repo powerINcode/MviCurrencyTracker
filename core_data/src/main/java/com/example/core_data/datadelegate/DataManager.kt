@@ -1,56 +1,49 @@
 package com.example.core_data.datadelegate
 
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.schedulers.Schedulers
-import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 
 class DataManager<Params, T>(private val delegate: DataDelegate<Params, T>) {
-    private val subject = BehaviorSubject.create<Data<T>>().apply {
-        doOnNext {
-            val a = 0
+    private val subject = MutableSharedFlow<Data<T>>(replay = 1)
+
+    suspend fun observe(forceReload: Boolean, params: Params): Flow<Data<T>> = flow {
+        val memoryCache = delegate.getFromMemory()
+        val result = if (memoryCache == null) {
+            val storageCache = delegate.getFromStorage()
+            if (storageCache != null) {
+                update(storageCache)
+                storageCache
+            } else {
+                null
+            }
+        } else {
+            memoryCache
+        }?.let { it.asCompleteData() } ?: Data.Loading<T>()
+
+        emit(result)
+    }
+        .flatMapLatest { data ->
+            if (forceReload || data is Data.Loading) {
+                loadAndUpdateCache(params)
+                    .catch { emit(Data.Error(it, data.data)) }
+                    .onStart { emit(Data.Loading(data.data)) }
+            } else {
+                flowOf(data)
+            }
         }
+        .onEach(subject::emit)
+        .onCompletion { emitAll(subject.drop(1)) }
+        .flowOn(Dispatchers.IO)
+
+    suspend fun update(data: T) {
+        delegate.putToMemory(data)
+        delegate.putToStorage(data)
+        subject.emit(data.asCompleteData())
     }
 
-    fun observe(forceReload: Boolean, params: Params): Observable<Data<T>> {
-        return delegate.getFromMemory()
-            .switchIfEmpty(
-                Maybe.defer { delegate.getFromStorage() }
-                    .flatMap { update(it).andThen(Maybe.just(it)) }
-            )
-            .map<Data<T>> { it.asCompleteData() }
-            .defaultIfEmpty(Data.Loading())
-            .flatMapObservable { data ->
-                if (forceReload || data is Data.Loading) {
-                    loadAndUpdateCache(params)
-                        .onErrorReturn {
-                            Data.Error(it, data.data)
-                        }
-                        .toObservable()
-                        .startWithItem(Data.Loading(data.data))
-                } else {
-                    Observable.just(data)
-                }
-            }
-            .doOnNext(subject::onNext)
-            .concatWith(subject.skip(1))
-            .subscribeOn(Schedulers.io())
+    private fun loadAndUpdateCache(params: Params): Flow<Data<T>> = flow {
+        val value = delegate.getFromNetwork(params)
+        update(value)
+        emit(value.asCompleteData())
     }
-
-    fun update(data: T): Completable {
-        return delegate.putToMemory(data)
-            .andThen(delegate.putToStorage(data))
-            .doOnComplete {
-                subject.onNext(data.asCompleteData())
-            }
-    }
-
-    private fun loadAndUpdateCache(params: Params): Single<Data<T>> =
-        delegate.getFromNetwork(params)
-            .flatMap { data ->
-                update(data)
-                    .andThen(Single.just(data.asCompleteData()))
-            }
 }

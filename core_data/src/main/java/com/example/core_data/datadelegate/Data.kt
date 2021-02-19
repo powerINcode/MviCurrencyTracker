@@ -1,6 +1,6 @@
 package com.example.core_data.datadelegate
 
-sealed class Data<T> {
+sealed class Data<out T> {
     abstract val data: T?
 
     data class Loading<T>(override val data: T? = null): Data<T>()
