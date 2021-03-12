@@ -1,11 +1,11 @@
 ext {
 
-    ktxVersion = "1.3.1"
+    ktxVersion = "1.3.2"
     lifecycleVersion = "2.2.0"
-    retrofitVersion = "2.8.1"
+    retrofitVersion = "2.9.0"
     rxJavaVersion = "3.0.0"
     daggerVersion = "2.29.1"
-    roomVersion = "2.3.0-alpha02"
+    roomVersion = "2.2.6"
 
     ui = [
             appcompat        : 'androidx.appcompat:appcompat:1.2.0',
