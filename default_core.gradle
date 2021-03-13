@@ -2,6 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: "kotlin-kapt"
+apply plugin: 'dagger.hilt.android.plugin'
+
 
 android {
     compileSdkVersion 30
@@ -23,6 +25,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
@@ -32,9 +42,6 @@ dependencies {
     implementation core.lifecycleExtensions
     implementation core.coroutines
     implementation core.lifecycleViewModel
-    implementation core.dagger
-    implementation core.daggerAndroid
-    implementation core.daggerSupport
-    kapt core.daggerProcessor
-    kapt core.daggerCompiler
+    implementation core.hilt
+    kapt core.hiltCompiler
 }

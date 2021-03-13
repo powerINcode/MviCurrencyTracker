@@ -23,4 +23,4 @@ interface FlowSimpleUseCase<Result>: FlowUseCase<Unit, Result> {
 
 interface FlowDataUseCase<Params, Result>: UseCase<Params, Flow<Data<Result>>>
 
-interface ObservableSimpleDataUseCase<Result>: FlowSimpleUseCase<Data<Result>>
+interface FlowSimpleDataUseCase<Result>: FlowSimpleUseCase<Data<Result>>

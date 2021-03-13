@@ -1,17 +1,21 @@
 package com.example.core.routing
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 class NavigatorImpl @Inject constructor(
-    private val activity: AppCompatActivity,
+    @ActivityContext private val context: Context,
     private val launchers: Set<@JvmSuppressWildcards FeatureLauncher>
 ): Navigator {
+    private val activity: AppCompatActivity get() = context as AppCompatActivity
+
     override fun navigate(command: NavigationCommand) {
         when (command) {
             is NavigationCommand.FeatureCommand -> {
-                launchers.asSequence()
+                launchers
                     .firstOrNull { it.suitFor(command.config) }
                     ?.launch(this, command.config)
             }

@@ -4,6 +4,8 @@ dependencies {
     implementation feature.rateTrackerApi
     implementation feature.profileApi
 
+    implementation core.ktxCore
+
     implementation data.room
 
     implementation lib.coreNetworkApi

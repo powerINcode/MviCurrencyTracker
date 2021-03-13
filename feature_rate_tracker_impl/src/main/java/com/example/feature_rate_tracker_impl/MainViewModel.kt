@@ -10,13 +10,14 @@ import com.example.feature_rate_tracker_impl.MainScreenContract.*
 import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY
 import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY_RATE
 import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY_VALUE
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.isActive
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
+@HiltViewModel
 class MainViewModel @Inject constructor(
     reducer: MainStateReducer,
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase,

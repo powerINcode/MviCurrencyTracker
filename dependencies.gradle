@@ -5,14 +5,15 @@ ext {
     retrofitVersion = "2.9.0"
     retrofitCoroutineAdapterVersion = "0.9.2"
     coroutinesVersion = "1.4.3"
-    daggerVersion = "2.29.1"
-    roomVersion = "2.2.6"
+    roomVersion = "2.3.0-alpha02"
+    hiltVersion = "2.33-beta"
 
     ui = [
             appcompat        : 'androidx.appcompat:appcompat:1.2.0',
             constraintLayout : 'androidx.constraintlayout:constraintlayout:2.0.1',
             recyclerView     : 'androidx.recyclerview:recyclerview:1.1.0',
             lifecycleFragment: "androidx.fragment:fragment-ktx:1.2.5",
+            lifecycleActivity: "androidx.activity:activity-ktx:1.2.5",
     ]
 
     core = [
@@ -21,11 +22,8 @@ ext {
             coroutines         : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion",
             lifecycleExtensions: "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion",
             lifecycleViewModel : "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion",
-            dagger             : "com.google.dagger:dagger:$daggerVersion",
-            daggerCompiler     : "com.google.dagger:dagger-compiler:$daggerVersion",
-            daggerAndroid      : "com.google.dagger:dagger-android:$daggerVersion",
-            daggerSupport      : "com.google.dagger:dagger-android-support:$daggerVersion",
-            daggerProcessor    : "com.google.dagger:dagger-android-processor:$daggerVersion",
+            hilt               : "com.google.dagger:hilt-android:$hiltVersion",
+            hiltCompiler       : "com.google.dagger:hilt-compiler:$hiltVersion",
 
     ]
 

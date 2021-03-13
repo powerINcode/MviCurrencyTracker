@@ -5,9 +5,12 @@ import com.example.core.viewmodel.BaseViewModel
 import com.example.feature_profile_api.data.ProfileRepository
 import com.example.feature_profile_api.data.model.Profile
 import com.example.feature_profile_impl.ProfileScreenContract.*
-import kotlinx.coroutines.flow.*
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 
+@HiltViewModel
 class ProfileViewModel @Inject constructor(
     reducer: ProfileStateReducer,
     private val profileRepository: ProfileRepository
@@ -31,8 +34,6 @@ class ProfileViewModel @Inject constructor(
             .collectInScope {
                 navigate(NavigationCommand.Finish)
             }
-
-
 
         profileRepository.getProfile()?.let { profile ->
             onChange(

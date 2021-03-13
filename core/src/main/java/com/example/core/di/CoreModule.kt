@@ -1,18 +1,11 @@
 package com.example.core.di
 
-import com.example.core.routing.FeatureLauncher
-import com.example.core.routing.FeatureLaunchersProvider
 import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Module
+@InstallIn(SingletonComponent::class)
 interface CoreModule {
 
-    companion object {
-        @Singleton
-        @Provides
-        fun provideFeatureLaunchers(featureLaunchersProvider: FeatureLaunchersProvider): Set<FeatureLauncher> =
-            featureLaunchersProvider.getFeatureLaunchers()
-    }
 }

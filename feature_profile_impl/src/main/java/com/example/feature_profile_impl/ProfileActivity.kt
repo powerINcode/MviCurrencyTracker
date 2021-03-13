@@ -1,24 +1,16 @@
 package com.example.feature_profile_impl
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import com.example.core.activity.BaseActivity
-import com.example.feature_profile_impl.di.ProfileActivityComponent
-import com.example.feature_profile_impl.di.ProfileFeatureComponent
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_profile.*
 
+@AndroidEntryPoint
 class ProfileActivity :
-    BaseActivity<ProfileActivityComponent, ProfileScreenContract.ProfileIntent, ProfileScreenContract.ProfileState, ProfileViewModel>() {
-    override fun getViewModelClass(): Class<ProfileViewModel> = ProfileViewModel::class.java
+    BaseActivity<ProfileScreenContract.ProfileIntent, ProfileScreenContract.ProfileState, ProfileViewModel>() {
 
-    override fun createComponent(): ProfileActivityComponent =
-        provideApi(ProfileFeatureComponent::class.java)
-            .getProfileActivityBuilder()
-            .activity(this)
-            .build()
-
-    override fun inject(component: ProfileActivityComponent) {
-        component.inject(this)
-    }
+    override val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

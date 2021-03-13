@@ -6,29 +6,19 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.example.core.activity.BaseActivity
 import com.example.feature_rate_tracker_impl.MainScreenContract.*
-import com.example.feature_rate_tracker_impl.di.RateTrackerActivityComponent
-import com.example.feature_rate_tracker_impl.di.RateTrackerFeatureComponent
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity :
-    BaseActivity<RateTrackerActivityComponent, RateTrackerIntent, RateTrackerState, MainViewModel>() {
-    override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
-
-    override fun createComponent(): RateTrackerActivityComponent =
-        provideApi(RateTrackerFeatureComponent::class.java)
-            .getRateTrackerActivityBuilder()
-            .activity(this)
-            .build()
-
-    override fun inject(component: RateTrackerActivityComponent) {
-        component.inject(this)
-    }
+@AndroidEntryPoint
+class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewModel>() {
+    override val viewModel by viewModels<MainViewModel>()
 
     private val rateAdapter = RateAdapter()
 

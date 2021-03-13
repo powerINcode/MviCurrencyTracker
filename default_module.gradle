@@ -1,4 +1,5 @@
 apply from: "../default_module_api.gradle"
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileOptions {
@@ -6,7 +7,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = "1.8"
     }
 }
 
@@ -15,17 +16,15 @@ dependencies {
     implementation ui.constraintLayout
     implementation ui.recyclerView
     implementation ui.lifecycleFragment
+    implementation ui.lifecycleFragment
 
     implementation core.kotlin
     implementation core.ktxCore
     implementation core.lifecycleExtensions
     implementation core.coroutines
     implementation core.lifecycleViewModel
-    implementation core.dagger
-    implementation core.daggerAndroid
-    implementation core.daggerSupport
-    kapt core.daggerProcessor
-    kapt core.daggerCompiler
+    implementation core.hilt
+    kapt core.hiltCompiler
 
     implementation data.retrofit
 
