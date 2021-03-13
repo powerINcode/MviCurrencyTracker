@@ -3,21 +3,20 @@ package com.example.feature_profile_impl
 import com.example.core.routing.NavigationCommand
 import com.example.core.rx.onMainThread
 import com.example.core.viewmodel.BaseViewModel
-import com.example.core_storage.models.profile.ProfileEntity
 import com.example.feature_profile_api.data.ProfileRepository
 import com.example.feature_profile_api.data.model.Profile
 import com.example.feature_profile_impl.ProfileScreenContract.*
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(
+    reducer: ProfileReducer,
     private val profileRepository: ProfileRepository
-) : BaseViewModel<ProfileIntent, ProfileState, ProfileChange>() {
+) : BaseViewModel<ProfileIntent, ProfileState, ProfileChange>(reducer) {
     override fun getInitialState(): ProfileState = ProfileState.EMPTY
 
     override fun getInitialChange(): ProfileChange = ProfileChange.DoNothing
 
-    init {
+    override fun doInit() {
         intentSubject.ofType(ProfileIntent.SaveProfile::class.java)
             .switchMapCompletable { intent ->
                 profileRepository.saveProfile(
@@ -29,7 +28,7 @@ class ProfileViewModel @Inject constructor(
                 )
                     .onMainThread()
                     .doOnComplete {
-                       navigate(NavigationCommand.Finish)
+                        navigate(NavigationCommand.Finish)
                     }
             }
 
@@ -47,19 +46,5 @@ class ProfileViewModel @Inject constructor(
                     )
                 )
             }
-    }
-
-    override fun reducer(
-        state: ProfileState,
-        change: ProfileChange
-    ): ProfileState {
-        return when (change) {
-            is ProfileChange.UpdateUser -> state.copy(
-                first = change.first,
-                second = change.second,
-                last = change.last
-            )
-            is ProfileChange.DoNothing -> state
-        }
     }
 }

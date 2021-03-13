@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    private val rateTrackerStateReducer: MainStateReducer,
+    rateTrackerStateReducer: MainStateReducer,
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase,
     private val getMainCurrency: GetMainCurrencyRatesUseCase
 ) : BaseViewModel<RateTrackerIntent, RateTrackerState, RateChange>(rateTrackerStateReducer) {
@@ -85,9 +85,5 @@ class MainViewModel @Inject constructor(
             }
 
             .subscribeTillClear()
-    }
-
-    override fun reducer(state: RateTrackerState, change: RateChange): RateTrackerState {
-        return rateTrackerStateReducer.reduce(state, change)
     }
 }
