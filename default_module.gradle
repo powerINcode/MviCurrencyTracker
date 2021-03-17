@@ -2,6 +2,11 @@ apply from: "../default_module_api.gradle"
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
+
+    buildFeatures {
+        viewBinding true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

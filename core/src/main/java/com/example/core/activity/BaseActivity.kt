@@ -3,12 +3,15 @@ package com.example.core.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.viewbinding.ViewBinding
 import com.example.core.livedata.EventObserver
 import com.example.core.routing.Navigator
 import com.example.core.viewmodel.BaseViewModel
 import javax.inject.Inject
 
-abstract class BaseActivity<Intent, State, VM: BaseViewModel<Intent, State, *>>: AppCompatActivity() {
+abstract class BaseActivity<Intent, State, VM: BaseViewModel<Intent, State, *>, ActivityBinding: ViewBinding> constructor(): AppCompatActivity() {
+
+    protected abstract val viewBinding: ActivityBinding
 
     @Inject
     lateinit var navigator: Navigator
@@ -25,6 +28,7 @@ abstract class BaseActivity<Intent, State, VM: BaseViewModel<Intent, State, *>>:
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(viewBinding.root)
 
         viewModel.state.observe(this, Observer { render(it) })
         viewModel.init()

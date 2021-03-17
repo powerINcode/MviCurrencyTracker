@@ -32,7 +32,7 @@ class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewM
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.info){
+        return if (item.itemId == R.id.info) {
             viewModel.send(RateTrackerIntent.NavigateToInfo)
             true
         } else {
@@ -42,9 +42,8 @@ class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        with(currencyRecyclerView) {
+        with(viewBinding.currencyRecyclerView) {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = rateAdapter
             setHasFixedSize(true)
@@ -64,15 +63,16 @@ class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewM
             })
         }
 
-        rateAdapter.onClick = { viewModel.send(RateTrackerIntent.CurrencySelected(it)) }
-        rateAdapter.onChange = { viewModel.send(RateTrackerIntent.AmountUpdated(it)) }
+        rateAdapter.onClick = { viewModel.send(MainScreenContract.RateTrackerIntent.CurrencySelected(it)) }
+        rateAdapter.onChange = { viewModel.send(MainScreenContract.RateTrackerIntent.AmountUpdated(it)) }
     }
 
-    override fun render(state: RateTrackerState) {
+    override fun render(state: MainScreenContract.RateTrackerState) {
         rateAdapter.swap(state.currencies)
 
-        progressView.isVisible = state.loading
-
-        errorHolder.isVisible = state.error
+        with(viewBinding) {
+            progressView.isVisible = state.loading
+            errorHolder.isVisible = state.error
+        }
     }
 }
