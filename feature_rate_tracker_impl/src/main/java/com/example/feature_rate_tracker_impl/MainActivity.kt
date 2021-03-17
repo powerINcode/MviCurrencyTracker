@@ -12,12 +12,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.example.core.activity.BaseActivity
+import com.example.core.activity.viewbinding.viewBindings
 import com.example.feature_rate_tracker_impl.MainScreenContract.*
+import com.example.feature_rate_tracker_impl.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewModel>() {
+class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewModel, ActivityMainBinding>() {
+    override val viewBinding: ActivityMainBinding by viewBindings(ActivityMainBinding::inflate)
+
     override val viewModel by viewModels<MainViewModel>()
 
     private val rateAdapter = RateAdapter()
