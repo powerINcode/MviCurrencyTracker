@@ -2,12 +2,16 @@ package com.example.feature_profile_impl
 
 import android.os.Bundle
 import com.example.core.activity.BaseActivity
+import com.example.core.activity.viewbinding.viewBindings
+import com.example.feature_profile_impl.databinding.ActivityProfileBinding
 import com.example.feature_profile_impl.di.ProfileActivityComponent
 import com.example.feature_profile_impl.di.ProfileFeatureComponent
-import kotlinx.android.synthetic.main.activity_profile.*
 
 class ProfileActivity :
-    BaseActivity<ProfileActivityComponent, ProfileScreenContract.ProfileIntent, ProfileScreenContract.ProfileState, ProfileViewModel>() {
+    BaseActivity<ProfileActivityComponent, ProfileScreenContract.ProfileIntent, ProfileScreenContract.ProfileState, ProfileViewModel, ActivityProfileBinding>() {
+
+    override val viewBinding: ActivityProfileBinding by viewBindings(ActivityProfileBinding::inflate)
+
     override fun getViewModelClass(): Class<ProfileViewModel> = ProfileViewModel::class.java
 
     override fun createComponent(): ProfileActivityComponent =
@@ -22,22 +26,25 @@ class ProfileActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile)
 
-        profileSaveButton.setOnClickListener {
-            viewModel.send(
-                ProfileScreenContract.ProfileIntent.SaveProfile(
-                    first = profileFirstEditText.text.toString(),
-                    second = profileLastEditText.text.toString(),
-                    last = profileSecondEditText.text.toString()
+        with(viewBinding) {
+            profileSaveButton.setOnClickListener {
+                viewModel.send(
+                    ProfileScreenContract.ProfileIntent.SaveProfile(
+                        first = profileFirstEditText.text.toString(),
+                        second = profileLastEditText.text.toString(),
+                        last = profileSecondEditText.text.toString()
+                    )
                 )
-            )
+            }
         }
     }
 
     override fun render(state: ProfileScreenContract.ProfileState) {
-        profileFirstEditText.setText(state.first)
-        profileLastEditText.setText(state.last)
-        profileSecondEditText.setText(state.second)
+        with(viewBinding) {
+            profileFirstEditText.setText(state.first)
+            profileLastEditText.setText(state.last)
+            profileSecondEditText.setText(state.second)
+        }
     }
 }

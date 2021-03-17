@@ -4,14 +4,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewbinding.ViewBinding
 import com.example.core.application.ApiProvider
 import com.example.core.livedata.EventObserver
-import com.example.core.routing.NavigationCommand
 import com.example.core.routing.Navigator
 import com.example.core.viewmodel.BaseViewModel
 import javax.inject.Inject
 
-abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Intent, State, *>>: AppCompatActivity() {
+abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Intent, State, *>, ActivityBinding: ViewBinding> constructor(): AppCompatActivity() {
+
+    protected abstract val viewBinding: ActivityBinding
+
     @Inject
     lateinit var modelFactory: ViewModelProvider.Factory
 
@@ -38,6 +41,7 @@ abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Int
         inject(component)
 
         super.onCreate(savedInstanceState)
+        setContentView(viewBinding.root)
 
         viewModel.state.observe(this, Observer { render(it) })
 

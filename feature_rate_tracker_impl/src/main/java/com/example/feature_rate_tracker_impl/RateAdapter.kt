@@ -3,82 +3,70 @@ package com.example.feature_rate_tracker_impl
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.feature_rate_tracker_impl.MainScreenContract.*
-import kotlinx.android.synthetic.main.item_rate.view.*
+import com.example.core.activity.recyclerview.BaseRecyclerViewAdapter
+import com.example.core.activity.recyclerview.ViewBindingHolder
+import com.example.feature_rate_tracker_impl.MainScreenContract.ScreenCurrency
+import com.example.feature_rate_tracker_impl.databinding.ItemRateBinding
 
-internal class RateAdapter : RecyclerView.Adapter<RateAdapter.Holder>() {
-    private val items: MutableList<ScreenCurrency> = mutableListOf()
-
+internal class RateAdapter : BaseRecyclerViewAdapter<ScreenCurrency, ItemRateBinding, RateAdapter.Holder>() {
     var onClick: ((ScreenCurrency) -> Unit)? = null
     var onChange: ((Double) -> Unit)? = null
 
-    override fun getItemCount(): Int = items.size
+    override val ScreenCurrency.itemId: Any
+        get() {
+            return this.name
+        }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder =
-        Holder(
-            LayoutInflater.from(
-                parent.context
-            ).inflate(R.layout.item_rate, parent, false)
-        )
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): RecyclerView.ViewHolder =
+        Holder(ItemRateBinding.inflate(inflater, parent, false), onClick, onChange)
 
-    override fun onBindViewHolder(holder: Holder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
-        holder.clearEditListener()
-
-        holder.textView.text = item.name
-
-
-        val value = String.format("%.2f", item.amount)
-        if (position == 0) {
-            if (!holder.editText.isFocused) {
-                holder.editText.setText(value)
-            }
-            holder.setEditListener(onChange)
-            holder.itemView.setOnClickListener { }
-
-        } else {
-            holder.editText.setText(value)
-            holder.itemView.setOnClickListener { holder.editText.requestFocus() }
-            holder.editText.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    onClick?.invoke(item)
-                }
-            }
-        }
+        holder as Holder
+        holder.bind(position == 0, item)
     }
 
-    fun swap(data: List<ScreenCurrency>) {
-        val diffUtilCallback = object: DiffUtil.Callback() {
-            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = items[oldItemPosition].name == data[newItemPosition].name
-
-            override fun getOldListSize(): Int = items.size
-
-            override fun getNewListSize(): Int = data.size
-
-            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean = items[oldItemPosition] == data[newItemPosition]
-
-        }
-
-        val result = DiffUtil.calculateDiff(diffUtilCallback)
-        items.clear()
-        items.addAll(data)
-
-        result.dispatchUpdatesTo(this)
-
-    }
-
-    class Holder(view: View) : RecyclerView.ViewHolder(view) {
-        val textView = itemView.currencyTextView
-        val editText = itemView.ediCurrencyEditText
+    class Holder(
+        viewBinding: ItemRateBinding,
+        private val onClick: ((ScreenCurrency) -> Unit)?,
+        private val onChange: ((Double) -> Unit)?
+    ) : ViewBindingHolder<ItemRateBinding, ScreenCurrency>(viewBinding) {
 
         private var watcher: TextWatcher? = null
 
-        fun setEditListener(block: ((Double) -> Unit)?) {
-            editText.removeTextChangedListener(watcher)
+        fun bind(selected: Boolean, item: ScreenCurrency) {
+            super.bind(item)
+
+            val value = String.format("%.2f", item.amount)
+
+            clearEditListener()
+
+            with(viewBinding) {
+                currencyTextView.text = item.name
+
+                if (selected) {
+                    if (!ediCurrencyEditText.isFocused) {
+                        ediCurrencyEditText.setText(value)
+                    }
+                    setEditListener(onChange)
+                    itemView.setOnClickListener { }
+
+                } else {
+                    ediCurrencyEditText.setText(value)
+                    itemView.setOnClickListener { ediCurrencyEditText.requestFocus() }
+                    ediCurrencyEditText.setOnFocusChangeListener { v, hasFocus ->
+                        if (hasFocus) {
+                            onClick?.invoke(item)
+                        }
+                    }
+                }
+            }
+        }
+
+        private fun setEditListener(block: ((Double) -> Unit)?) {
+            viewBinding.ediCurrencyEditText.removeTextChangedListener(watcher)
             watcher = object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                 }
@@ -97,11 +85,11 @@ internal class RateAdapter : RecyclerView.Adapter<RateAdapter.Holder>() {
                 }
 
             }
-            editText.addTextChangedListener(watcher)
+            viewBinding.ediCurrencyEditText.addTextChangedListener(watcher)
         }
 
-        fun clearEditListener() {
-            editText.removeTextChangedListener(watcher)
+        private fun clearEditListener() {
+            viewBinding.ediCurrencyEditText.removeTextChangedListener(watcher)
         }
     }
 }

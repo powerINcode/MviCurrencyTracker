@@ -11,14 +11,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.example.core.activity.BaseActivity
-import com.example.feature_rate_tracker_impl.MainScreenContract.*
+import com.example.core.activity.viewbinding.viewBindings
+import com.example.feature_rate_tracker_impl.databinding.ActivityMainBinding
 import com.example.feature_rate_tracker_impl.di.RateTrackerActivityComponent
 import com.example.feature_rate_tracker_impl.di.RateTrackerFeatureComponent
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity :
-    BaseActivity<RateTrackerActivityComponent, RateTrackerIntent, RateTrackerState, MainViewModel>() {
+    BaseActivity<RateTrackerActivityComponent, MainScreenContract.RateTrackerIntent, MainScreenContract.RateTrackerState, MainViewModel, ActivityMainBinding>() {
+
     override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
+
+    override val viewBinding: ActivityMainBinding by viewBindings(ActivityMainBinding::inflate)
 
     override fun createComponent(): RateTrackerActivityComponent =
         provideApi(RateTrackerFeatureComponent::class.java)
@@ -38,8 +41,8 @@ class MainActivity :
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.info){
-            viewModel.send(RateTrackerIntent.NavigateToInfo)
+        return if (item.itemId == R.id.info) {
+            viewModel.send(MainScreenContract.RateTrackerIntent.NavigateToInfo)
             true
         } else {
             super.onOptionsItemSelected(item)
@@ -48,9 +51,8 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        with(currencyRecyclerView) {
+        with(viewBinding.currencyRecyclerView) {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = rateAdapter
             setHasFixedSize(true)
@@ -70,15 +72,16 @@ class MainActivity :
             })
         }
 
-        rateAdapter.onClick = { viewModel.send(RateTrackerIntent.CurrencySelected(it)) }
-        rateAdapter.onChange = { viewModel.send(RateTrackerIntent.AmountUpdated(it)) }
+        rateAdapter.onClick = { viewModel.send(MainScreenContract.RateTrackerIntent.CurrencySelected(it)) }
+        rateAdapter.onChange = { viewModel.send(MainScreenContract.RateTrackerIntent.AmountUpdated(it)) }
     }
 
-    override fun render(state: RateTrackerState) {
+    override fun render(state: MainScreenContract.RateTrackerState) {
         rateAdapter.swap(state.currencies)
 
-        progressView.isVisible = state.loading
-
-        errorHolder.isVisible = state.error
+        with(viewBinding) {
+            progressView.isVisible = state.loading
+            errorHolder.isVisible = state.error
+        }
     }
 }
