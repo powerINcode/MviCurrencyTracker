@@ -6,6 +6,7 @@ import com.example.core_test.CoroutineTestRule
 import com.example.core_test.thenEmit
 import com.example.core_test.thenReturnEmpty
 import com.example.feature_rate_tracker_api.domain.GetMainCurrencyRatesUseCase
+import com.example.feature_rate_tracker_api.domain.ObserveAdvertisementUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveCurrencyRatesUseCase
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.runBlocking
@@ -25,6 +26,7 @@ class MainViewModelTest {
     val liveDataRule: TestRule = InstantTaskExecutorRule()
 
     private val rateTrackerStateReducer: MainStateReducer = mock()
+    private val observeAdvertisement: ObserveAdvertisementUseCase = mock()
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase = mock()
     private val getMainCurrency: GetMainCurrencyRatesUseCase = mock()
 
@@ -44,7 +46,8 @@ class MainViewModelTest {
         viewModel = MainViewModel(
             reducer = rateTrackerStateReducer,
             observeCurrencyRates = observeCurrencyRates,
-            getMainCurrency = getMainCurrency
+            getMainCurrency = getMainCurrency,
+            observeAdvertisement = observeAdvertisement
         ).apply { infinityLoading = false }
 
     }

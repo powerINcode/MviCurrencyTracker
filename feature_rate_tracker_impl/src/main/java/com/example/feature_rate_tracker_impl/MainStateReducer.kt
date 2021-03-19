@@ -2,6 +2,7 @@ package com.example.feature_rate_tracker_impl
 
 import com.example.core.viewmodel.StateReducer
 import com.example.feature_rate_tracker_impl.MainScreenContract.*
+import com.example.feature_rate_tracker_impl.delegates.RateDelegate
 import javax.inject.Inject
 
 class MainStateReducer @Inject constructor() : StateReducer<RateTrackerState, RateChange> {
@@ -44,7 +45,8 @@ class MainStateReducer @Inject constructor() : StateReducer<RateTrackerState, Ra
             is RateChange.UpdateRates -> {
                 val currencies = if (state.currencies.size != change.currencies.size) {
                     change.currencies.map {
-                        ScreenCurrency(
+                        RateDelegate.Model(
+                            id = "${Companion.RATE_ITEM_ID}-${it.name}",
                             name = it.name,
                             amount = Companion.DEFAULT_CURRENCY_VALUE,
                             rate = it.rate
@@ -68,7 +70,7 @@ class MainStateReducer @Inject constructor() : StateReducer<RateTrackerState, Ra
         return amount.times(safeRate)
     }
 
-    private fun List<ScreenCurrency>.selectCurrency(currency: String): List<ScreenCurrency> {
+    private fun List<RateDelegate.Model>.selectCurrency(currency: String): List<RateDelegate.Model> {
         return this.toMutableList().apply {
             val indexOfFirst = indexOfFirst { it.name == currency }
             val item = removeAt(indexOfFirst)

@@ -12,9 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.example.core.activity.BaseActivity
+import com.example.core.activity.recyclerview.DelegateRecyclerViewAdapter
 import com.example.core.activity.viewbinding.viewBindings
 import com.example.feature_rate_tracker_impl.MainScreenContract.*
 import com.example.feature_rate_tracker_impl.databinding.ActivityMainBinding
+import com.example.feature_rate_tracker_impl.delegates.AdvertisementDelegate
+import com.example.feature_rate_tracker_impl.delegates.RateDelegate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -24,7 +27,14 @@ class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewM
 
     override val viewModel by viewModels<MainViewModel>()
 
-    private val rateAdapter = RateAdapter()
+    private val rateDelegate = RateDelegate()
+
+    private val rateAdapter = DelegateRecyclerViewAdapter(
+        delegates = listOf(
+            rateDelegate,
+            AdvertisementDelegate()
+        )
+    )
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         MenuInflater(this).inflate(R.menu.menu, menu)
@@ -42,6 +52,10 @@ class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        rateDelegate.clickFlow.collectWhenCreated {
+
+        }
 
         with(viewBinding.currencyRecyclerView) {
             layoutManager = LinearLayoutManager(this@MainActivity)
@@ -63,8 +77,8 @@ class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewM
             })
         }
 
-        rateAdapter.onClick = { viewModel.send(MainScreenContract.RateTrackerIntent.CurrencySelected(it)) }
-        rateAdapter.onChange = { viewModel.send(MainScreenContract.RateTrackerIntent.AmountUpdated(it)) }
+        rateDelegate.clickFlow.collectWhenCreated { viewModel.send(MainScreenContract.RateTrackerIntent.CurrencySelected(it)) }
+        rateDelegate.changeFlow.collectWhenCreated { viewModel.send(MainScreenContract.RateTrackerIntent.AmountUpdated(it)) }
     }
 
     override fun render(state: MainScreenContract.RateTrackerState) {

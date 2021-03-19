@@ -6,7 +6,7 @@ import androidx.viewbinding.ViewBinding
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-inline fun <reified T : ViewBinding> viewBindings(noinline initializer: (LayoutInflater) -> T): ReadOnlyProperty<AppCompatActivity, T> =
+inline fun <reified T : ViewBinding> AppCompatActivity.viewBindings(noinline initializer: (LayoutInflater) -> T): ReadOnlyProperty<AppCompatActivity, T> =
     ViewBindingProperty(initializer)
 
 class ViewBindingProperty<T : ViewBinding>(private val initializer: (LayoutInflater) -> T) :

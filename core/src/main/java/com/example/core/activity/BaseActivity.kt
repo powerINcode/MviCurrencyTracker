@@ -3,10 +3,13 @@ package com.example.core.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.example.core.livedata.EventObserver
 import com.example.core.routing.Navigator
 import com.example.core.viewmodel.BaseViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 abstract class BaseActivity<Intent, State, VM: BaseViewModel<Intent, State, *>, ActivityBinding: ViewBinding> constructor(): AppCompatActivity() {
@@ -35,4 +38,8 @@ abstract class BaseActivity<Intent, State, VM: BaseViewModel<Intent, State, *>, 
     }
 
     protected abstract fun render(state: State)
+
+    fun <T> Flow<T>.collectWhenCreated(block: (T) -> Unit) = lifecycleScope.launchWhenCreated {
+        collect { block(it) }
+    }
 }

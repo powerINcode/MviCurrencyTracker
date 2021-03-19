@@ -2,10 +2,12 @@ package com.example.feature_rate_tracker_impl.di
 
 import com.example.feature_rate_tracker_api.data.RateTrackerRepository
 import com.example.feature_rate_tracker_api.domain.GetMainCurrencyRatesUseCase
+import com.example.feature_rate_tracker_api.domain.ObserveAdvertisementUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveCurrencyRatesUseCase
 import com.example.feature_rate_tracker_impl.data.RateService
 import com.example.feature_rate_tracker_impl.data.RateTrackerRepositoryImpl
 import com.example.feature_rate_tracker_impl.domain.GetMainCurrencyRatesUseCaseImpl
+import com.example.feature_rate_tracker_impl.domain.ObserveAdvertisementUseCaseImpl
 import com.example.feature_rate_tracker_impl.domain.ObserveCurrencyRatesUseCaseImpl
 import dagger.Binds
 import dagger.Module
@@ -29,6 +31,10 @@ internal interface RateTrackerFeatureModule {
     @Singleton
     @Binds
     fun bindGetMainCurrencyRatesUseCase(usecase: GetMainCurrencyRatesUseCaseImpl): GetMainCurrencyRatesUseCase
+
+    @Singleton
+    @Binds
+    fun bindObserveAdvertisementUseCase(usecase: ObserveAdvertisementUseCaseImpl): ObserveAdvertisementUseCase
 
     companion object {
         @Singleton
