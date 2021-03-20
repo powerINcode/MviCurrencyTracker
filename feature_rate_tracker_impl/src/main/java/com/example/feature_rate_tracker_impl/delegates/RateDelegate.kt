@@ -2,13 +2,15 @@ package com.example.feature_rate_tracker_impl
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.core.activity.recyclerview.BaseRecyclerViewAdapter
-import com.example.core.activity.recyclerview.ViewBindingHolder
-import com.example.feature_rate_tracker_impl.MainScreenContract.ScreenCurrency
+import com.example.core.activity.recyclerview.RecyclerViewDelegate
+import com.example.feature_rate_tracker_impl.R
 import com.example.feature_rate_tracker_impl.databinding.ItemRateBinding
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.PublishSubject
+
+class RateDelegate : RecyclerViewDelegate(R.layout.item_rate) {
 
 internal class RateAdapter : BaseRecyclerViewAdapter<ScreenCurrency, ItemRateBinding, RateAdapter.Holder>() {
     var onClick: ((ScreenCurrency) -> Unit)? = null

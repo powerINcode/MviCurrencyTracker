@@ -9,6 +9,8 @@ import com.example.core.application.ApiProvider
 import com.example.core.livedata.EventObserver
 import com.example.core.routing.Navigator
 import com.example.core.viewmodel.BaseViewModel
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 
 abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Intent, State, *>, ActivityBinding: ViewBinding> constructor(): AppCompatActivity() {
@@ -46,6 +48,12 @@ abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Int
         viewModel.state.observe(this, Observer { render(it) })
 
         viewModel.init()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        compositeDisposable.clear()
     }
 
     protected abstract fun render(state: State)
