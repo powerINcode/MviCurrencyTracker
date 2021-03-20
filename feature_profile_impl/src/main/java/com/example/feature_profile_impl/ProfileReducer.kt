@@ -1,7 +1,6 @@
 package com.example.feature_profile_impl
 
 import com.example.core.viewmodel.StateReducer
-import com.example.feature_profile_impl.ProfileScreenContract.ProfileChange
 import com.example.feature_profile_impl.ProfileScreenContract.ProfileState
 import javax.inject.Inject
 

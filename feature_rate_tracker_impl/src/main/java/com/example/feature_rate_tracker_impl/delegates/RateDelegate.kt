@@ -5,6 +5,7 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.example.core.activity.recyclerview.RecyclerViewDelegate
+import com.example.feature_rate_tracker_api.data.models.Currency
 import com.example.feature_rate_tracker_impl.R
 import com.example.feature_rate_tracker_impl.databinding.ItemRateBinding
 import io.reactivex.rxjava3.core.Observable

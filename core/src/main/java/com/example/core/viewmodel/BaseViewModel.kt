@@ -1,21 +1,17 @@
 package com.example.core.viewmodel
 
-import android.util.Log
-import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
 import com.example.core.livedata.LiveEvent
 import com.example.core.livedata.MutableLiveEvent
-import com.example.core.mvi.Change
 import com.example.core.routing.NavigationCommand
+import com.example.core.rx.toLiveData
 import com.example.core_data.datadelegate.Data
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -43,6 +39,7 @@ abstract class BaseViewModel<Intent, State, C: Change>(
     private val inited = AtomicBoolean(false)
 
     fun init() {
+        LiveDataReactiveStreams.fromPublisher<Int> {  }
         if (inited.compareAndSet(false, true)) {
             doInit()
         }
@@ -100,23 +97,30 @@ abstract class BaseViewModel<Intent, State, C: Change>(
         })
     )
 
-    protected fun<T> Observable<Data<T>>.onDataAvailable(block: (T) -> Unit) = this.doOnNext { it.data?.let(block) }
-    protected fun<T> Observable<Data<T>>.onDataError(block: (e: Throwable) -> Unit) = this.doOnNext {
-        if (it is Data.Error) {
-            block(it.error)
-        }
-    }
-
-    protected fun<T> Observable<Data<T>>.onDataNotError(block: (T?) -> Unit) = this.doOnNext {
-        if (it !is Data.Error) {
-            block(it.data)
-        }
-    }
-    protected fun<T> Observable<Data<T>>.extractError() = this.map {
-        if (it is Data.Error) {
-            throw it.error
-        } else {
-            it
+    protected fun <T> Observable<Data<T>>.extractContent(
+        dropCache: Boolean = false,
+        onError: (Throwable) -> Throwable? = { null },
+        onContentEmpty: () -> Unit = {},
+        onContentAvailable: (T) -> Unit = {},
+        onContentLoaded: (T) -> Unit = {},
+    ): Observable<T> {
+        return this.switchMap { data ->
+            Observable.create<T> { emitter ->
+                when (data) {
+                    is Data.Error -> onError(data.error)?.let { emitter.onError(it) }
+                    is Data.Loading -> data.content?.let { cache ->
+                        onContentAvailable(cache)
+                        if (!dropCache) {
+                            emitter.onNext(cache)
+                        }
+                    } ?: onContentEmpty()
+                    is Data.Complete -> {
+                        onContentAvailable(data.content)
+                        onContentLoaded(data.content)
+                        emitter.onNext(data.content)
+                    }
+                }
+            }
         }
     }
 
