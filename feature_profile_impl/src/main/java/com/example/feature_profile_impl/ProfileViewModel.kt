@@ -9,15 +9,12 @@ import com.example.feature_profile_impl.ProfileScreenContract.*
 import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(
-    reducer: ProfileReducer,
+    private val reducer: ProfileReducer,
     private val profileRepository: ProfileRepository
-) : BaseViewModel<ProfileIntent, ProfileState, ProfileChange>(reducer) {
-    override fun getInitialState(): ProfileState = ProfileState.EMPTY
-
-    override fun getInitialChange(): ProfileChange = ProfileChange.DoNothing
+) : BaseViewModel<ProfileState>(reducer) {
 
     override fun doInit() {
-        intentSubject.ofType(ProfileIntent.SaveProfile::class.java)
+        intentOf<ProfileIntent.SaveProfile>()
             .switchMapCompletable { intent ->
                 profileRepository.saveProfile(
                     Profile(
@@ -38,13 +35,10 @@ class ProfileViewModel @Inject constructor(
 
         profileRepository.getProfile()
             .subscribeTillClear { profile ->
-                onChange(
-                    ProfileChange.UpdateUser(
-                        first = profile.first,
-                        second = profile.second,
-                        last = profile.last
-                    )
-                )
+                reducer.updateUserProfile( profile.first,
+                         profile.second,
+                         profile.last)
+
             }
     }
 }

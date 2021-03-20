@@ -2,5 +2,7 @@ apply from: "../default_core.gradle"
 
 dependencies {
     implementation ui.appcompat
+    implementation ui.lifecycleFragment
+    implementation core.lifecycle
     implementation lib.coreData
 }

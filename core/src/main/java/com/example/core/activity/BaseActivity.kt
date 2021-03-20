@@ -2,7 +2,6 @@ package com.example.core.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.example.core.application.ApiProvider
@@ -13,7 +12,7 @@ import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 
-abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Intent, State, *>, ActivityBinding: ViewBinding> constructor(): AppCompatActivity() {
+abstract class BaseActivity<Component: Any, State: Any, VM: BaseViewModel<State>, ActivityBinding: ViewBinding>: AppCompatActivity() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     protected abstract val viewBinding: ActivityBinding
@@ -46,8 +45,7 @@ abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Int
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-        viewModel.state.observe(this, Observer { render(it) })
-
+        viewModel.stateFlow.observe(this, { render(it) })
         viewModel.init()
     }
 

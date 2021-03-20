@@ -27,7 +27,7 @@ class DelegateRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
-        (holder as? RecyclerViewDelegate.ViewHolder<*, *>)?.bind(item)
+        (holder as? RecyclerViewDelegate.ViewHolder<*, *>)?.bindItem(item)
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {

@@ -15,26 +15,21 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.concurrent.atomic.AtomicBoolean
 
-abstract class BaseViewModel<Intent, State, C: Change>(
-    private val reducer: StateReducer<State, C>
+abstract class BaseViewModel<State : Any>(
+    private val reducer: StateReducer<State>
 ) : ViewModel() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
-    protected val _state: MutableLiveData<State> = MutableLiveData()
-    val state: LiveData<State> = _state
+    val stateFlow: LiveData<State>
+        get() = reducer.stateFlow.toLiveData()
 
-    protected val _navigation: MutableLiveEvent<NavigationCommand> = MutableLiveEvent()
-    val navigation: LiveEvent<NavigationCommand> = _navigation
+    protected val state: State get() = reducer.state
 
-    private val startState: State by lazy { getInitialState() }
-    abstract fun getInitialState(): State
+    private val _navigation: MutableLiveEvent<NavigationCommand> = MutableLiveEvent()
+    val navigation: LiveEvent<NavigationCommand> get() = _navigation
 
-    private val startChange: C by lazy { getInitialChange() }
-    abstract fun getInitialChange(): C
-
-    protected val intentSubject = BehaviorSubject.create<Intent>()
-    protected val changeSubject = BehaviorSubject.create<C>()
+    protected val intentSubject = BehaviorSubject.create<Any>()
 
     private val inited = AtomicBoolean(false)
 
@@ -47,7 +42,7 @@ abstract class BaseViewModel<Intent, State, C: Change>(
 
     protected abstract fun doInit()
 
-    fun send(intent: Intent) {
+    fun send(intent: Any) {
         intentSubject.onNext(intent)
     }
 
@@ -55,32 +50,7 @@ abstract class BaseViewModel<Intent, State, C: Change>(
         _navigation.event = command
     }
 
-    @MainThread
-    protected fun notify(state: State) {
-        _state.value = state
-    }
-
-    protected fun onChange(vararg changes: C?) {
-        changes.filterNotNull().forEach { change -> changeSubject.onNext(change) }
-    }
-
-    init {
-        changeSubject
-            .startWithItem(startChange)
-            .observeOn(Schedulers.io())
-            .concatMap {
-                if (it is com.example.core.mvi.ChangeContainer) {
-                    Observable.fromIterable(it.changes.map { it as C })
-                } else {
-                    Observable.just(it)
-                }
-            }
-            .scan(startState, { state, change -> reducer.reduce(state, change) })
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeTillClear({
-                Log.e(this.javaClass.canonicalName, it.localizedMessage ?: "Empty String")
-            }, ::notify)
-    }
+    protected inline fun <reified T : Any> intentOf(): Observable<T> = intentSubject.ofType(T::class.java)
 
     override fun onCleared() {
         compositeDisposable.clear()
