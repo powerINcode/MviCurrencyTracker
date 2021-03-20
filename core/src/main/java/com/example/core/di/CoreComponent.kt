@@ -1,7 +1,7 @@
 package com.example.core.di
 
 import com.example.core.di.components.ComponentProvider
-import com.example.core.routing.FeatureLauncher
+import com.example.core.network.di.CoreModule
 import com.example.core.routing.FeatureLaunchersProvider
 import dagger.BindsInstance
 import dagger.Component

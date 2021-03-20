@@ -2,7 +2,7 @@ package com.example.feature_profile_impl.di
 
 import com.example.core.di.components.ComponentProvider
 import com.example.core.di.scopes.FeatureScope
-import com.example.core_storage.di.CoreStorageApi
+import com.example.core.storage.di.CoreStorageApi
 import com.example.feature_profile_api.ProfileApi
 import dagger.Component
 

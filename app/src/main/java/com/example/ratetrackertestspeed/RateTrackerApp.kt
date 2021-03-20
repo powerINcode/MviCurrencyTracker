@@ -4,9 +4,9 @@ import android.app.Application
 import com.example.core.application.ApiProvider
 import com.example.core.di.CoreComponent
 import com.example.core.di.CoreComponentProvider
-import com.example.core_network_impl.di.CoreNetworkApiProvider
-import com.example.core_storage.di.CoreStorageComponent
-import com.example.core_storage.di.CoreStorageProvider
+import com.example.core.network.di.CoreNetworkApiProvider
+import com.example.core.storage.di.CoreStorageComponent
+import com.example.core.storage.di.CoreStorageProvider
 import com.example.feature_profile_impl.di.ProfileFeatureComponent
 import com.example.feature_profile_impl.di.ProfileFeatureComponentProvider
 import com.example.feature_rate_tracker_impl.di.RateTrackerFeatureComponent

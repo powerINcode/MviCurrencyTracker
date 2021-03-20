@@ -2,8 +2,8 @@ package com.example.feature_rate_tracker_impl.di
 
 import com.example.core.di.components.ComponentProvider
 import com.example.core.di.scopes.FeatureScope
-import com.example.core_network_api.CoreNetworkApi
-import com.example.core_storage.di.CoreStorageApi
+import com.example.core.network.di.CoreNetworkApi
+import com.example.core.storage.di.CoreStorageApi
 import com.example.feature_rate_tracker_api.RateTrackerApi
 import dagger.Component
 

@@ -3,11 +3,11 @@ package com.example.core.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
+import com.example.core.data.datadelegate.Data
 import com.example.core.livedata.LiveEvent
 import com.example.core.livedata.MutableLiveEvent
 import com.example.core.routing.NavigationCommand
 import com.example.core.rx.toLiveData
-import com.example.core_data.datadelegate.Data
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
