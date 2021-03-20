@@ -15,6 +15,7 @@ import javax.inject.Inject
 
 abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Intent, State, *>, ActivityBinding: ViewBinding> constructor(): AppCompatActivity() {
 
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     protected abstract val viewBinding: ActivityBinding
 
     @Inject
@@ -57,6 +58,10 @@ abstract class BaseActivity<Component: Any, Intent, State, VM: BaseViewModel<Int
     }
 
     protected abstract fun render(state: State)
+
+    fun <T> Observable<T>.subscribeTillDestroy(block: (T) -> Unit)  {
+        compositeDisposable.add(this.subscribe(block, {}, {}))
+    }
 
     protected fun<T: Any> provideApi(api: Class<T>): T = (applicationContext as ApiProvider).getApi(api)
 }

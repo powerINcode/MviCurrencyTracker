@@ -29,6 +29,10 @@ internal interface RateTrackerFeatureModule {
     @Binds
     fun bindGetMainCurrencyRatesUseCase(usecase: GetMainCurrencyRatesUseCaseImpl): GetMainCurrencyRatesUseCase
 
+    @FeatureScope
+    @Binds
+    fun bindObserveAdvertisementUseCase(usecase: ObserveAdvertisementUseCaseImpl): ObserveAdvertisementUseCase
+
     companion object {
         @FeatureScope
         @Provides

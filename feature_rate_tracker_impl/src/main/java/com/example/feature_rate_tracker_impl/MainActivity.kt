@@ -11,8 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.example.core.activity.BaseActivity
+import com.example.core.activity.recyclerview.DelegateRecyclerViewAdapter
 import com.example.core.activity.viewbinding.viewBindings
 import com.example.feature_rate_tracker_impl.databinding.ActivityMainBinding
+import com.example.feature_rate_tracker_impl.delegates.AdvertisementDelegate
+import com.example.feature_rate_tracker_impl.delegates.RateDelegate
 import com.example.feature_rate_tracker_impl.di.RateTrackerActivityComponent
 import com.example.feature_rate_tracker_impl.di.RateTrackerFeatureComponent
 
@@ -33,7 +36,14 @@ class MainActivity :
         component.inject(this)
     }
 
-    private val rateAdapter = RateAdapter()
+    private val rateDelegate = RateDelegate()
+
+    private val rateAdapter = DelegateRecyclerViewAdapter(
+        delegates = listOf(
+            rateDelegate,
+            AdvertisementDelegate()
+        )
+    )
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         MenuInflater(this).inflate(R.menu.menu, menu)
@@ -72,8 +82,8 @@ class MainActivity :
             })
         }
 
-        rateAdapter.onClick = { viewModel.send(MainScreenContract.RateTrackerIntent.CurrencySelected(it)) }
-        rateAdapter.onChange = { viewModel.send(MainScreenContract.RateTrackerIntent.AmountUpdated(it)) }
+        rateDelegate.clickFlow.subscribeTillDestroy { viewModel.send(MainScreenContract.RateTrackerIntent.CurrencySelected(it)) }
+        rateDelegate.changeFlow.subscribeTillDestroy { viewModel.send(MainScreenContract.RateTrackerIntent.AmountUpdated(it)) }
     }
 
     override fun render(state: MainScreenContract.RateTrackerState) {
