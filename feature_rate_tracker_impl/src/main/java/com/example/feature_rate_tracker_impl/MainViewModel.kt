@@ -35,6 +35,12 @@ class MainViewModel @Inject constructor(
             .doOnNext { rateTrackerStateReducer.updateAmount(it) }
             .subscribeTillClear()
 
+        observeAdvertisement()
+            .extractContent(dropCache = true)
+            .subscribeTillClear {
+                rateTrackerStateReducer.addAdvertisements(it)
+            }
+
 
         intentOf<RateTrackerIntent.CurrencySelected>()
             .startWith(

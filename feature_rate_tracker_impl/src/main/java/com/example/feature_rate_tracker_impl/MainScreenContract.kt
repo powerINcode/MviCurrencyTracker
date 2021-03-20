@@ -1,6 +1,7 @@
 package com.example.feature_rate_tracker_impl
 
 import com.example.core.activity.recyclerview.RecyclerViewDelegate
+import com.example.feature_rate_tracker_api.data.models.Advertisement
 import com.example.feature_rate_tracker_api.data.models.Currency
 
 interface MainScreenContract {
@@ -8,6 +9,7 @@ interface MainScreenContract {
         val currency: Currency,
         val amount: Double,
         val currencies: List<Currency>,
+        val advertisements: List<Advertisement>,
         val error: Boolean,
         val loading: Boolean,
         val screenItems: List<RecyclerViewDelegate.Model>
@@ -21,6 +23,7 @@ interface MainScreenContract {
                     ),
                     amount = 1.0,
                     currencies = emptyList(),
+                    advertisements = emptyList(),
                     loading = false,
                     error = false,
                     screenItems = emptyList()
