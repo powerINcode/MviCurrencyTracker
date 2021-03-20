@@ -8,7 +8,7 @@ import com.example.feature_profile_impl.di.ProfileActivityComponent
 import com.example.feature_profile_impl.di.ProfileFeatureComponent
 
 class ProfileActivity :
-    BaseActivity<ProfileActivityComponent, ProfileScreenContract.ProfileIntent, ProfileScreenContract.ProfileState, ProfileViewModel, ActivityProfileBinding>() {
+    BaseActivity<ProfileActivityComponent, ProfileScreenContract.ProfileState, ProfileViewModel, ActivityProfileBinding>() {
 
     override val viewBinding: ActivityProfileBinding by viewBindings(ActivityProfileBinding::inflate)
 

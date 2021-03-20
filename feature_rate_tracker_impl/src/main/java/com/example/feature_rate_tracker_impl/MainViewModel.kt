@@ -14,26 +14,25 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    rateTrackerStateReducer: MainStateReducer,
+    private val reducer: MainStateReducer,
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase,
     private val observeAdvertisement: ObserveAdvertisementUseCase,
     private val getMainCurrency: GetMainCurrencyRatesUseCase
-) : BaseViewModel<RateTrackerIntent, RateTrackerState, RateChange>(rateTrackerStateReducer) {
-
-    override fun getInitialState(): RateTrackerState = RateTrackerState.EMPTY
-    override fun getInitialChange(): RateChange = RateChange.StartLoading
+) : BaseViewModel<RateTrackerState>(reducer) {
 
     @Volatile
+    @VisibleForTesting
     var infinityLoading: Boolean = true
 
     override fun doInit() {
-        intentSubject.ofType(RateTrackerIntent.NavigateToInfo::class.java)
+        intentOf<RateTrackerIntent.NavigateToInfo>()
             .subscribeTillClear {
                 navigate(NavigationCommand.FeatureCommand(ProfileFeatureConfig))
             }
 
-        intentSubject.ofType(RateTrackerIntent.AmountUpdated::class.java).map { it.amount }
-            .doOnNext { onChange(RateChange.UpdateAmount(it), RateChange.RecalculateAmounts) }
+        intentOf<RateTrackerIntent.AmountUpdated>()
+            .map { it.amount }
+            .doOnNext { reducer.updateAmount(it) }
             .subscribeTillClear()
 
 
@@ -46,41 +45,23 @@ class MainViewModel @Inject constructor(
             )
             .doOnNext { reducer.selectCurrency(it.currency, it.amount) }
             .map { it.currency }
-            .startWith(
-                getMainCurrency()
-                    .map {
-                        RateDelegate.Model(
-                            id = "$RATE_ITEM_ID-${it.name}",
-                            name = it.name,
-                            amount = DEFAULT_CURRENCY_VALUE,
-                            rate = it.rate
-                        )
-                    }.defaultIfEmpty(
-                        RateDelegate.Model(
-                            id = RATE_ITEM_ID,
-                            name = DEFAULT_CURRENCY,
-                            amount = DEFAULT_CURRENCY_VALUE,
-                            rate = DEFAULT_CURRENCY_RATE
-                        )
-                    )
-            )
             .switchMap { currency ->
                 observeCurrencyRates(currency.name)
-                    .onDataAvailable {
-                        onChange(
-                            RateChange.StopLoading,
-                            RateChange.UpdateRates(it),
-                            RateChange.RecalculateAmounts
-                        )
-                    }
-                    .onDataError { onChange(RateChange.Error) }
-                    .onDataNotError { onChange(RateChange.HideError) }
-                    .extractError()
-                    .doOnError {
-                        val b = 0
-                    }
-                    .retryWhen { it.delay(1000, TimeUnit.MILLISECONDS) }
-                    .takeWhile { it.loading }
+                    .extractContent(
+                        dropCache = true,
+                        onError = { e ->
+                            reducer.ratesLoadingError()
+                            e
+                        },
+                        onContentEmpty = {
+                            reducer.startLoadingRates()
+                        },
+                        onContentAvailable = {
+                            reducer.ratesLoaded(it)
+                        }
+                    )
+                    .retryWhen { it.delay(DELAY_TIME, TimeUnit.MILLISECONDS) }
+                    .take(1)
                     .repeatWhen {
                         if (infinityLoading) {
                             it.flatMap { Observable.timer(DELAY_TIME, TimeUnit.MILLISECONDS) }
@@ -89,7 +70,6 @@ class MainViewModel @Inject constructor(
                         }
                     }
             }
-
             .subscribeTillClear()
     }
 

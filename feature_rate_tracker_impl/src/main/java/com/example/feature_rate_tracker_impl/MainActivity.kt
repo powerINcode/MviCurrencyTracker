@@ -21,7 +21,7 @@ import com.example.feature_rate_tracker_impl.di.RateTrackerActivityComponent
 import com.example.feature_rate_tracker_impl.di.RateTrackerFeatureComponent
 
 class MainActivity :
-    BaseActivity<RateTrackerActivityComponent, MainScreenContract.RateTrackerIntent, MainScreenContract.RateTrackerState, MainViewModel, ActivityMainBinding>() {
+    BaseActivity<RateTrackerActivityComponent, RateTrackerState, MainViewModel, ActivityMainBinding>() {
 
     override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
 
@@ -83,12 +83,19 @@ class MainActivity :
             })
         }
 
-        rateDelegate.clickFlow.subscribeTillDestroy { viewModel.send(MainScreenContract.RateTrackerIntent.CurrencySelected(it)) }
-        rateDelegate.changeFlow.subscribeTillDestroy { viewModel.send(MainScreenContract.RateTrackerIntent.AmountUpdated(it)) }
+        rateDelegate.clickFlow.subscribeTillDestroy {
+            viewModel.send(
+                RateTrackerIntent.CurrencySelected(
+                    it.extra,
+                    it.amount
+                )
+            )
+        }
+        rateDelegate.changeFlow.subscribeTillDestroy { viewModel.send(RateTrackerIntent.AmountUpdated(it)) }
     }
 
-    override fun render(state: MainScreenContract.RateTrackerState) {
-        rateAdapter.swap(state.currencies)
+    override fun render(state: RateTrackerState) {
+        rateAdapter.swap(state.screenItems)
 
         with(viewBinding) {
             progressView.isVisible = state.loading

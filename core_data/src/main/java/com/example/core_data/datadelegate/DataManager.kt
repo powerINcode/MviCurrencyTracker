@@ -26,10 +26,10 @@ class DataManager<Params, T>(private val delegate: DataDelegate<Params, T>) {
                 if (forceReload || data is Data.Loading) {
                     loadAndUpdateCache(params)
                         .onErrorReturn {
-                            Data.Error(it, data.data)
+                            Data.Error(it, data.content)
                         }
                         .toObservable()
-                        .startWithItem(Data.Loading(data.data))
+                        .startWithItem(Data.Loading(data.content))
                 } else {
                     Observable.just(data)
                 }

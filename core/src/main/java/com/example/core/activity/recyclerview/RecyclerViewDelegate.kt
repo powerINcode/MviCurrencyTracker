@@ -4,34 +4,49 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 abstract class RecyclerViewDelegate(
     @LayoutRes val layoutId: Int
 ) {
     abstract fun suitFor(target: Model): Boolean
+
     fun suitFor(layoutId: Int): Boolean = this.layoutId == layoutId
 
     abstract fun create(view: View): RecyclerView.ViewHolder
 
     abstract class ViewHolder<T : Model, V : ViewBinding>(view: View) : RecyclerView.ViewHolder(view) {
 
-        protected abstract fun bindViewBinding(view: View): V
-
-        protected lateinit var viewBinding: V
+        protected abstract val viewBinding: V
         protected lateinit var model: T
 
-        open fun bind(item: Model) {
+        fun bindItem(item: Model) {
             model = item as T
-            viewBinding = bindViewBinding(itemView)
-            bind(model, viewBinding)
+            bind(model)
         }
 
-        protected abstract fun bind(item: T, viewBinding: V)
-        fun onAttachToRecyclerView() {}
-        fun onDetachToRecyclerView() {}
+        protected abstract fun bind(item: T)
+
+        open fun onAttachToRecyclerView() {}
+
+        open fun onDetachToRecyclerView() {}
+
+        protected fun <T> viewBindings(binder: (View) -> T) = ViewHolderBindingReadProperty(binder)
+
+        protected class ViewHolderBindingReadProperty<T>(val binder: (View) -> T): ReadOnlyProperty<RecyclerView.ViewHolder, T> {
+            override fun getValue(thisRef: RecyclerView.ViewHolder, property: KProperty<*>): T {
+                return binder(thisRef.itemView)
+            }
+
+        }
     }
 
     interface Model {
         val id: String
+    }
+
+    interface ExtraContainer<T> {
+        val extra: T
     }
 }

@@ -31,7 +31,7 @@ class MainViewModelTest {
     @JvmField
     val liveDataRule: TestRule = InstantTaskExecutorRule()
 
-    private val rateTrackerStateReducer: MainStateReducer = mock()
+    private val rateTrackerStateReducer: MainStateReducer = spy(MainStateReducer())
     private val observeAdvertisement: ObserveAdvertisementUseCase = mock()
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase = mock()
     private val getMainCurrency: GetMainCurrencyRatesUseCase = mock()
@@ -40,12 +40,6 @@ class MainViewModelTest {
 
     @Before
     fun setup() {
-        whenever(
-            rateTrackerStateReducer.reduce(
-                any(),
-                any()
-            )
-        ).doReturn(MainScreenContract.RateTrackerState.EMPTY)
         whenever(observeCurrencyRates.invoke(any()))
             .thenEmit(Data.Complete(emptyList()))
         whenever(getMainCurrency()).thenEmitEmpty()
@@ -67,7 +61,8 @@ class MainViewModelTest {
         viewModel.init()
 
         verify(getMainCurrency).invoke()
-        verify(observeCurrencyRates).invoke(MainScreenContract.DEFAULT_CURRENCY)
+        verify(rateTrackerStateReducer).selectCurrency(defaultCurrency, defaultAmount)
+        verify(observeCurrencyRates).invoke(defaultCurrency.name)
 
         testObservable.onNext(Data.Complete(emptyList()))
 
