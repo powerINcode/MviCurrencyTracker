@@ -6,6 +6,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.example.core.activity.recyclerview.RecyclerViewDelegate
 import com.example.core.coroutine.mutableEventFlow
+import com.example.feature_rate_tracker_api.data.models.Currency
 import com.example.feature_rate_tracker_impl.R
 import com.example.feature_rate_tracker_impl.databinding.ItemRateBinding
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,8 +28,9 @@ class RateDelegate : RecyclerViewDelegate(R.layout.item_rate) {
         override val id: String,
         val name: String,
         val amount: Double,
-        val rate: Double
-    ) : RecyclerViewDelegate.Model
+        val rate: Double,
+        override val extra: Currency
+    ) : RecyclerViewDelegate.Model, ExtraContainer<Currency>
 
     inner class Holder(
         view: View
@@ -36,12 +38,34 @@ class RateDelegate : RecyclerViewDelegate(R.layout.item_rate) {
 
         private var watcher: TextWatcher? = null
 
-        override fun bindViewBinding(view: View): ItemRateBinding = ItemRateBinding.bind(view)
+        private val isSelectedHolder: Boolean get() = adapterPosition == 0
 
-        override fun bind(item: Model, viewBinding: ItemRateBinding) {
+        override val viewBinding: ItemRateBinding by viewBindings(ItemRateBinding::bind)
+
+        override fun onAttachToRecyclerView() {
+            super.onAttachToRecyclerView()
+
+            itemView.setOnClickListener {
+                viewBinding.ediCurrencyEditText.requestFocus()
+            }
+
+            viewBinding.ediCurrencyEditText.setOnFocusChangeListener { v, hasFocus ->
+                if (!isSelectedHolder && hasFocus) {
+                    _clickFlow.tryEmit(model)
+                }
+            }
+
+            setEditListener()
+        }
+
+        override fun onDetachToRecyclerView() {
+            super.onDetachToRecyclerView()
+
+            viewBinding.ediCurrencyEditText.removeTextChangedListener(watcher)
+        }
+
+        override fun bind(item: Model) {
             val value = String.format("%.2f", item.amount)
-
-            clearEditListener()
 
             with(viewBinding) {
                 currencyTextView.text = item.name
@@ -50,17 +74,9 @@ class RateDelegate : RecyclerViewDelegate(R.layout.item_rate) {
                     if (!ediCurrencyEditText.isFocused) {
                         ediCurrencyEditText.setText(value)
                     }
-                    setEditListener()
-                    itemView.setOnClickListener { }
 
                 } else {
                     ediCurrencyEditText.setText(value)
-                    itemView.setOnClickListener { ediCurrencyEditText.requestFocus() }
-                    ediCurrencyEditText.setOnFocusChangeListener { v, hasFocus ->
-                        if (hasFocus) {
-                            _clickFlow.tryEmit(item)
-                        }
-                    }
                 }
             }
         }
@@ -81,15 +97,13 @@ class RateDelegate : RecyclerViewDelegate(R.layout.item_rate) {
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     val value = if (s.isNullOrEmpty()) null else s.toString()
-                    _changeFlow.tryEmit(value?.replace(",", ".")?.toDouble() ?: 0.0)
+                   if (isSelectedHolder) {
+                       _changeFlow.tryEmit(value?.replace(",", ".")?.toDouble() ?: 0.0)
+                   }
                 }
 
             }
             viewBinding.ediCurrencyEditText.addTextChangedListener(watcher)
-        }
-
-        private fun clearEditListener() {
-            viewBinding.ediCurrencyEditText.removeTextChangedListener(watcher)
         }
     }
 }

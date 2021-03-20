@@ -1,7 +1,16 @@
 package com.example.core.viewmodel
 
-import com.example.core.mvi.Change
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-interface StateReducer<State, C: Change> {
-    fun reduce(state: State,change: C): State
+abstract class StateReducer<State: Any>(initialState: State) {
+    private val _stateFlow: MutableStateFlow<State> = MutableStateFlow(initialState)
+    val stateFlow: StateFlow<State> = _stateFlow
+
+    val state: State
+        get() = _stateFlow.value
+
+    protected fun State.commit() {
+       _stateFlow.value = this
+    }
 }

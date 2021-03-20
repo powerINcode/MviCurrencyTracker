@@ -9,7 +9,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProfileActivity :
-    BaseActivity<ProfileScreenContract.ProfileIntent, ProfileScreenContract.ProfileState, ProfileViewModel, ActivityProfileBinding>() {
+    BaseActivity<ProfileScreenContract.ProfileState, ProfileViewModel, ActivityProfileBinding>() {
 
     override val viewBinding: ActivityProfileBinding by viewBindings(ActivityProfileBinding::inflate)
 

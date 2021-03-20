@@ -25,8 +25,8 @@ class DataManager<Params, T>(private val delegate: DataDelegate<Params, T>) {
         .flatMapLatest { data ->
             if (forceReload || data is Data.Loading) {
                 loadAndUpdateCache(params)
-                    .catch { emit(Data.Error(it, data.data)) }
-                    .onStart { emit(Data.Loading(data.data)) }
+                    .catch { emit(Data.Error(it, data.content)) }
+                    .onStart { emit(Data.Loading(data.content)) }
             } else {
                 flowOf(data)
             }

@@ -25,6 +25,7 @@ dependencies {
     implementation core.kotlin
     implementation core.ktxCore
     implementation core.lifecycleExtensions
+    implementation core.lifecycle
     implementation core.coroutines
     implementation core.lifecycleViewModel
     implementation core.hilt

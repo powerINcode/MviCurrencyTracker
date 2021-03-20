@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewModel, ActivityMainBinding>() {
+class MainActivity : BaseActivity<RateTrackerState, MainViewModel, ActivityMainBinding>() {
     override val viewBinding: ActivityMainBinding by viewBindings(ActivityMainBinding::inflate)
 
     override val viewModel by viewModels<MainViewModel>()
@@ -53,10 +53,6 @@ class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewM
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        rateDelegate.clickFlow.collectWhenCreated {
-
-        }
-
         with(viewBinding.currencyRecyclerView) {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = rateAdapter
@@ -77,12 +73,12 @@ class MainActivity : BaseActivity<RateTrackerIntent, RateTrackerState, MainViewM
             })
         }
 
-        rateDelegate.clickFlow.collectWhenCreated { viewModel.send(MainScreenContract.RateTrackerIntent.CurrencySelected(it)) }
-        rateDelegate.changeFlow.collectWhenCreated { viewModel.send(MainScreenContract.RateTrackerIntent.AmountUpdated(it)) }
+        rateDelegate.clickFlow.collectWhenCreated { viewModel.send(RateTrackerIntent.CurrencySelected(it.extra, it.amount)) }
+        rateDelegate.changeFlow.collectWhenCreated { viewModel.send(RateTrackerIntent.AmountUpdated(it)) }
     }
 
     override fun render(state: MainScreenContract.RateTrackerState) {
-        rateAdapter.swap(state.currencies)
+        rateAdapter.swap(state.screenItems)
 
         with(viewBinding) {
             progressView.isVisible = state.loading

@@ -12,12 +12,12 @@ class AdvertisementDelegate : RecyclerViewDelegate(R.layout.item_advertisement) 
     override fun create(view: View): RecyclerView.ViewHolder = ViewHolder(view)
 
     inner class ViewHolder(view: View): RecyclerViewDelegate.ViewHolder<Model, ItemAdvertisementBinding>(view) {
-        override fun bindViewBinding(view: View): ItemAdvertisementBinding = ItemAdvertisementBinding.bind(view)
 
-        override fun bind(item: Model, viewBinding: ItemAdvertisementBinding) {
+        override val viewBinding: ItemAdvertisementBinding by viewBindings(ItemAdvertisementBinding::bind)
+
+        override fun bind(item: Model) {
             viewBinding.advertisementNameTextView.text = item.title
         }
-
     }
 
     data class Model(

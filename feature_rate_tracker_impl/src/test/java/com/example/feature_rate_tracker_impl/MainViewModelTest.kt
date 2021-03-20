@@ -25,7 +25,7 @@ class MainViewModelTest {
     @JvmField
     val liveDataRule: TestRule = InstantTaskExecutorRule()
 
-    private val rateTrackerStateReducer: MainStateReducer = mock()
+    private val rateTrackerStateReducer: MainStateReducer = spy(MainStateReducer())
     private val observeAdvertisement: ObserveAdvertisementUseCase = mock()
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase = mock()
     private val getMainCurrency: GetMainCurrencyRatesUseCase = mock()
@@ -34,12 +34,6 @@ class MainViewModelTest {
 
     @Before
     fun setup() = runBlocking {
-        whenever(
-            rateTrackerStateReducer.reduce(
-                any(),
-                any()
-            )
-        ).doReturn(MainScreenContract.RateTrackerState.EMPTY)
         whenever(observeCurrencyRates.invoke(any())).thenEmit(Data.Complete(emptyList()))
         whenever(getMainCurrency()).thenReturnEmpty()
 
@@ -54,19 +48,18 @@ class MainViewModelTest {
 
     @Test
     fun `state | initiation`() = runBlocking {
-        whenever(observeCurrencyRates.invoke(any())).thenEmit(Data.Complete(emptyList()))
+        val defaultCurrency = MainScreenContract.RateTrackerState.EMPTY.currency
+        val defaultAmount = MainScreenContract.RateTrackerState.EMPTY.amount
+        whenever(observeCurrencyRates.invoke(any()))
+            .thenEmit(Data.Loading(null), Data.Complete(emptyList()))
 
         viewModel.init()
 
         verify(getMainCurrency).invoke()
-        verify(observeCurrencyRates).invoke(MainScreenContract.DEFAULT_CURRENCY)
+        verify(rateTrackerStateReducer).selectCurrency(defaultCurrency, defaultAmount)
+        verify(observeCurrencyRates).invoke(defaultCurrency.name)
 
-        verify(rateTrackerStateReducer).reduce(any(), eq(MainScreenContract.RateChange.StartLoading))
-        verify(rateTrackerStateReducer).reduce(any(), eq(MainScreenContract.RateChange.StopLoading))
-        verify(rateTrackerStateReducer).reduce(any(), eq(MainScreenContract.RateChange.UpdateRates(emptyList())))
-        verify(rateTrackerStateReducer).reduce(any(), eq(MainScreenContract.RateChange.RecalculateAmounts))
-        verify(rateTrackerStateReducer).reduce(any(), eq(MainScreenContract.RateChange.HideError))
-
-        Unit
+        verify(rateTrackerStateReducer).startLoadingRates()
+        verify(rateTrackerStateReducer).ratesLoaded(any())
     }
 }

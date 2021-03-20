@@ -1,19 +1,15 @@
 package com.example.feature_rate_tracker_impl
 
+import androidx.annotation.VisibleForTesting
 import com.example.core.routing.NavigationCommand
 import com.example.core.viewmodel.BaseViewModel
-import com.example.core_data.datadelegate.loading
 import com.example.feature_profile_api.declaration.ProfileFeatureConfig
 import com.example.feature_rate_tracker_api.domain.GetMainCurrencyRatesUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveAdvertisementUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveCurrencyRatesUseCase
 import com.example.feature_rate_tracker_impl.MainScreenContract.*
-import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY
-import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY_RATE
-import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.DEFAULT_CURRENCY_VALUE
-import com.example.feature_rate_tracker_impl.MainScreenContract.Companion.RATE_ITEM_ID
-import com.example.feature_rate_tracker_impl.delegates.RateDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -22,69 +18,58 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    reducer: MainStateReducer,
+    private val reducer: MainStateReducer,
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase,
     private val observeAdvertisement: ObserveAdvertisementUseCase,
     private val getMainCurrency: GetMainCurrencyRatesUseCase
-) : BaseViewModel<RateTrackerIntent, RateTrackerState, RateChange>(reducer) {
-
-    override fun getInitialState(): RateTrackerState = RateTrackerState.EMPTY
-    override fun getInitialChange(): RateChange = RateChange.StartLoading
+) : BaseViewModel<RateTrackerState>(reducer) {
 
     @Volatile
+    @VisibleForTesting
     var infinityLoading: Boolean = true
 
+    @ExperimentalCoroutinesApi
     override suspend fun doInit() {
-        intentSharedFlow.filterIsInstance<RateTrackerIntent.NavigateToInfo>()
+        intentOf<RateTrackerIntent.NavigateToInfo>()
             .collectInScope {
                 navigate(NavigationCommand.FeatureCommand(ProfileFeatureConfig))
             }
 
-        intentSharedFlow.filterIsInstance<RateTrackerIntent.AmountUpdated>()
+        intentOf<RateTrackerIntent.AmountUpdated>()
             .map { it.amount }
-            .onEach { onChange(RateChange.UpdateAmount(it), RateChange.RecalculateAmounts) }
+            .onEach { reducer.updateAmount(it) }
             .collectInScope()
 
 
-        intentSharedFlow.filterIsInstance<RateTrackerIntent.CurrencySelected>()
-            .onEach {
-                onChange(RateChange.SelectNewCurrency(it.currency))
-            }
-            .map { it.currency }
+        intentOf<RateTrackerIntent.CurrencySelected>()
             .onStart {
-                emit(getMainCurrency()?.let {
-                    RateDelegate.Model(
-                        id = "$RATE_ITEM_ID-${it.name}",
-                        name = it.name,
-                        amount = DEFAULT_CURRENCY_VALUE,
-                        rate = it.rate
-                    )
-                } ?: RateDelegate.Model(
-                    id = RATE_ITEM_ID,
-                    name = DEFAULT_CURRENCY,
-                    amount = DEFAULT_CURRENCY_VALUE,
-                    rate = DEFAULT_CURRENCY_RATE
-                ))
+                val currency = getMainCurrency() ?: state.currency
+                emit(RateTrackerIntent.CurrencySelected(currency, state.amount))
             }
+            .onEach { reducer.selectCurrency(it.currency, it.amount) }
+            .map { it.currency }
             .flatMapLatest { currency ->
                 observeCurrencyRates(currency.name)
-                    .onDataAvailable {
-                        onChange(
-                            RateChange.StopLoading,
-                            RateChange.UpdateRates(it),
-                            RateChange.RecalculateAmounts
-                        )
-                    }
-                    .onDataError { onChange(RateChange.Error) }
-                    .onDataNotError { onChange(RateChange.HideError) }
-                    .extractError()
+                    .extractContent(
+                        dropCache = true,
+                        onError = { e ->
+                            reducer.ratesLoadingError()
+                            e
+                        },
+                        onContentEmpty = {
+                            reducer.startLoadingRates()
+                        },
+                        onContentAvailable = {
+                            reducer.ratesLoaded(it)
+                        }
+                    )
                     .retryWhen { _, _ ->
-                        delay(1000)
+                        delay(RETRY_DELAY)
                         true
 
                     }
-                    .takeWhile { it.loading }
-                    .repeatWithDelay(1000)
+                    .take(1)
+                    .repeatWithDelay(RETRY_DELAY)
             }
             .collectInScope()
     }
@@ -101,4 +86,8 @@ class MainViewModel @Inject constructor(
         } else {
             this
         }
+
+    companion object {
+        private const val RETRY_DELAY = 1000L
+    }
 }

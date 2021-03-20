@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestCoroutineScope
 import org.mockito.stubbing.OngoingStubbing
 
 @ExperimentalCoroutinesApi
@@ -21,5 +20,5 @@ fun <T> OngoingStubbing<T>.thenReturnEmpty(): OngoingStubbing<T?> = this.thenRet
 fun <T> OngoingStubbing<T>.thenEmitError(error: Throwable): OngoingStubbing<T?> = this.thenThrow(error)
 fun OngoingStubbing<Unit>.thenReturnComplete(): OngoingStubbing<Unit> = this.thenReturn(Unit)
 
-fun <T> OngoingStubbing<Flow<T>>.thenEmit(item: T): OngoingStubbing<Flow<T>> = this.thenReturn(flowOf(item))
+fun <T> OngoingStubbing<Flow<T>>.thenEmit(vararg items: T): OngoingStubbing<Flow<T>> = this.thenReturn(flowOf(*items))
 fun <T> OngoingStubbing<Flow<T>>.thenEmitEmpty(): OngoingStubbing<Flow<T>> = this.thenReturn(flowOf())
