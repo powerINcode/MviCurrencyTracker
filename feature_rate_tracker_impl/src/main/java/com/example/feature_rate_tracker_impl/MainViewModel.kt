@@ -40,6 +40,12 @@ class MainViewModel @Inject constructor(
             .onEach { reducer.updateAmount(it) }
             .collectInScope()
 
+        observeAdvertisement()
+            .extractContent(dropCache = true)
+            .collectInScope {
+                reducer.addAdvertisements(it)
+            }
+
 
         intentOf<RateTrackerIntent.CurrencySelected>()
             .onStart {

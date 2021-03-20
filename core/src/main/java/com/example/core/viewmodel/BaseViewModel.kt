@@ -73,6 +73,7 @@ abstract class BaseViewModel<State: Any>(
                 } ?: onContentEmpty()
                 is Data.Complete -> {
                     onContentAvailable(data.content)
+                    onContentLoaded(data.content)
                     emit(data.content)
                 }
             }
