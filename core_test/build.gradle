@@ -1,7 +1,0 @@
-apply from: "../default_core.gradle"
-
-dependencies {
-    implementation test.junit
-    implementation test.mockito
-    implementation test.mockitoKotlin
-}

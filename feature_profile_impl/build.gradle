@@ -2,6 +2,6 @@ apply from: "../default_module.gradle"
 
 dependencies {
     implementation feature.profileApi
-    implementation lib.coreData
-    implementation lib.coreStorage
+    implementation core.data
+    implementation core.storage
 }

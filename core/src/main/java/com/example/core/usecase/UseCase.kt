@@ -1,6 +1,6 @@
 package com.example.core.usecase
 
-import com.example.core_data.datadelegate.Data
+import com.example.core.data.datadelegate.Data
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single

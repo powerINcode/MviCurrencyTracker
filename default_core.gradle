@@ -33,16 +33,16 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation ui.recyclerView
 
-    implementation core.kotlin
-    implementation core.ktxCore
-    implementation core.lifecycleExtensions
-    implementation core.rxJava
-    implementation core.rxJavaAndroid
-    implementation core.rxJavaKotlin
-    implementation core.lifecycleViewModel
-    implementation core.dagger
-    implementation core.daggerAndroid
-    implementation core.daggerSupport
-    kapt core.daggerProcessor
-    kapt core.daggerCompiler
+    implementation domain.kotlin
+    implementation domain.ktxCore
+    implementation domain.lifecycleExtensions
+    implementation domain.rxJava
+    implementation domain.rxJavaAndroid
+    implementation domain.rxJavaKotlin
+    implementation domain.lifecycleViewModel
+    implementation domain.dagger
+    implementation domain.daggerAndroid
+    implementation domain.daggerSupport
+    kapt domain.daggerProcessor
+    kapt domain.daggerCompiler
 }

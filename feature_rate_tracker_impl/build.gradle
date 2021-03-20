@@ -6,7 +6,7 @@ dependencies {
 
     implementation data.room
 
-    implementation lib.coreNetworkApi
-    implementation lib.coreData
-    implementation lib.coreStorage
+    implementation core.data
+    implementation core.network
+    implementation core.storage
 }

@@ -11,7 +11,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = "1.8"
     }
 }
 
@@ -21,19 +21,19 @@ dependencies {
     implementation ui.recyclerView
     implementation ui.lifecycleFragment
 
-    implementation core.kotlin
-    implementation core.ktxCore
-    implementation core.lifecycleExtensions
-    implementation core.lifecycle
-    implementation core.rxJava
-    implementation core.rxJavaAndroid
-    implementation core.rxJavaKotlin
-    implementation core.lifecycleViewModel
-    implementation core.dagger
-    implementation core.daggerAndroid
-    implementation core.daggerSupport
-    kapt core.daggerProcessor
-    kapt core.daggerCompiler
+    implementation domain.kotlin
+    implementation domain.ktxCore
+    implementation domain.lifecycleExtensions
+    implementation domain.lifecycle
+    implementation domain.rxJava
+    implementation domain.rxJavaAndroid
+    implementation domain.rxJavaKotlin
+    implementation domain.lifecycleViewModel
+    implementation domain.dagger
+    implementation domain.daggerAndroid
+    implementation domain.daggerSupport
+    kapt domain.daggerProcessor
+    kapt domain.daggerCompiler
 
     implementation data.retrofit
 
@@ -41,12 +41,12 @@ dependencies {
     androidTestImplementation test.androidJunit
     androidTestImplementation test.androidEspresso
 
-    implementation lib.core
+    implementation core.core
 
     testImplementation test.junit
     testImplementation test.liveDataTest
     testImplementation test.mockito
     testImplementation test.mockitoInline
     testImplementation test.mockitoKotlin
-    testImplementation lib.coreTest
+    testImplementation core.test
 }

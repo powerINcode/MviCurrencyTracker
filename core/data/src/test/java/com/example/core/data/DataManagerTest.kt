@@ -1,4 +1,4 @@
-package com.example.core_data
+package com.example.core.data
 
 import com.example.core.data.datadelegate.Data
 import com.example.core.data.datadelegate.DataDelegate

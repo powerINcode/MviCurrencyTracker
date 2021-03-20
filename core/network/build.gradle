@@ -1,0 +1,10 @@
+apply from: "../../default_core.gradle"
+
+dependencies {
+    implementation data.retrofit
+    implementation data.gsonConverter
+    implementation data.retrofitRxJava
+    implementation data.gson
+
+    implementation core.core
+}

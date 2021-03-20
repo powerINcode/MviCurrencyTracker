@@ -1,8 +1,8 @@
 package com.example.feature_profile_impl.data
 
 import com.example.core.rx.onIo
-import com.example.core_storage.daos.ProfileDao
-import com.example.core_storage.models.profile.ProfileEntity
+import com.example.core.storage.daos.ProfileDao
+import com.example.core.storage.models.profile.ProfileEntity
 import com.example.feature_profile_api.data.ProfileRepository
 import com.example.feature_profile_api.data.model.Profile
 import io.reactivex.rxjava3.core.Completable
