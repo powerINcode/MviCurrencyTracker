@@ -22,14 +22,14 @@ dependencies {
     implementation ui.recyclerView
     implementation ui.lifecycleFragment
 
-    implementation core.kotlin
-    implementation core.ktxCore
-    implementation core.lifecycleExtensions
-    implementation core.lifecycle
-    implementation core.coroutines
-    implementation core.lifecycleViewModel
-    implementation core.hilt
-    kapt core.hiltCompiler
+    implementation domain.kotlin
+    implementation domain.ktxCore
+    implementation domain.lifecycleExtensions
+    implementation domain.lifecycle
+    implementation domain.coroutines
+    implementation domain.lifecycleViewModel
+    implementation domain.hilt
+    kapt domain.hiltCompiler
 
     implementation data.retrofit
 
@@ -37,12 +37,12 @@ dependencies {
     androidTestImplementation test.androidJunit
     androidTestImplementation test.androidEspresso
 
-    implementation lib.core
+    implementation core.core
 
     testImplementation test.junit
     testImplementation test.liveDataTest
     testImplementation test.mockito
     testImplementation test.mockitoInline
     testImplementation test.mockitoKotlin
-    testImplementation lib.coreTest
+    testImplementation core.test
 }

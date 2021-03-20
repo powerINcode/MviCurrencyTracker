@@ -1,10 +1,10 @@
 package com.example.feature_rate_tracker_impl
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.core_data.datadelegate.Data
-import com.example.core_test.CoroutineTestRule
-import com.example.core_test.thenEmit
-import com.example.core_test.thenReturnEmpty
+import com.example.core.data.datadelegate.Data
+import com.example.core.test.CoroutineTestRule
+import com.example.core.test.thenEmit
+import com.example.core.test.thenReturnEmpty
 import com.example.feature_rate_tracker_api.domain.GetMainCurrencyRatesUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveAdvertisementUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveCurrencyRatesUseCase

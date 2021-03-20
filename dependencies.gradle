@@ -16,7 +16,7 @@ ext {
             lifecycleActivity: "androidx.activity:activity-ktx:1.2.5",
     ]
 
-    core = [
+    domain = [
             kotlin             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             ktxCore            : "androidx.core:core-ktx:$ktxVersion",
             coroutines         : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion",
@@ -56,13 +56,11 @@ ext {
             profileImpl    : project(":feature_profile_impl"),
     ]
 
-    lib = [
-            core           : project(":core"),
-            coreTest       : project(":core_test"),
-            coreData       : project(":core_data"),
-            coreStorage    : project(":core_storage"),
-            coreNetworkApi : project(":core_network_api"),
-            coreNetworkImpl: project(":core_network_impl"),
+    core = [
+            core   : project(":core"),
+            network: project(":core:network"),
+            data   : project(":core:data"),
+            storage: project(":core:storage"),
+            test   : project(":core:test")
     ]
-
 }

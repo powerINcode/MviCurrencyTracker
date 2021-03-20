@@ -43,11 +43,11 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation ui.recyclerView
 
-    implementation core.kotlin
-    implementation core.ktxCore
-    implementation core.lifecycleExtensions
-    implementation core.coroutines
-    implementation core.lifecycleViewModel
-    implementation core.hilt
-    kapt core.hiltCompiler
+    implementation domain.kotlin
+    implementation domain.ktxCore
+    implementation domain.lifecycleExtensions
+    implementation domain.coroutines
+    implementation domain.lifecycleViewModel
+    implementation domain.hilt
+    kapt domain.hiltCompiler
 }

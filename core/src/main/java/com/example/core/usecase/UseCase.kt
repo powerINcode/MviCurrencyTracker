@@ -1,6 +1,6 @@
 package com.example.core.usecase
 
-import com.example.core_data.datadelegate.Data
+import com.example.core.data.datadelegate.Data
 import kotlinx.coroutines.flow.Flow
 
 interface UseCase<Params, Result> {

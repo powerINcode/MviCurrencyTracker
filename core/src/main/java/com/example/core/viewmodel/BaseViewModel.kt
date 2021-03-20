@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.core.data.datadelegate.Data
 import com.example.core.livedata.LiveEvent
 import com.example.core.livedata.MutableLiveEvent
 import com.example.core.routing.NavigationCommand
-import com.example.core_data.datadelegate.Data
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.atomic.AtomicBoolean

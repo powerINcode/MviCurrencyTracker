@@ -48,13 +48,13 @@ dependencies {
     implementation ui.recyclerView
     implementation ui.lifecycleFragment
 
-    implementation core.kotlin
-    implementation core.ktxCore
-    implementation core.lifecycleExtensions
-    implementation core.coroutines
-    implementation core.lifecycleViewModel
-    implementation core.hilt
-    kapt core.hiltCompiler
+    implementation domain.kotlin
+    implementation domain.ktxCore
+    implementation domain.lifecycleExtensions
+    implementation domain.coroutines
+    implementation domain.lifecycleViewModel
+    implementation domain.hilt
+    kapt domain.hiltCompiler
 
     implementation data.retrofit
     implementation data.gsonConverter
@@ -66,10 +66,9 @@ dependencies {
     androidTestImplementation test.androidJunit
     androidTestImplementation test.androidEspresso
 
-    implementation lib.core
-    implementation lib.coreNetworkApi
-    implementation lib.coreNetworkImpl
-    implementation lib.coreStorage
+    implementation core.core
+    implementation core.network
+    implementation core.storage
 
     implementation feature.rateTrackerApi
     implementation feature.rateTrackerImpl

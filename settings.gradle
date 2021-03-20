@@ -1,12 +1,14 @@
-include ':core_test'
-include ':feature_profile_impl'
-include ':feature_profile_api'
-include ':core_storage'
-include ':core_data'
-include ':feature_rate_tracker_impl'
-include ':feature_rate_tracker_api'
-include ':core_network_impl'
-include ':core_network_api'
-include ':core'
-include ':app'
 rootProject.name = "RateTrackerTestSpeed"
+include ':app',
+        ':core',
+        ':core:network',
+        ':core:data',
+        ':core:storage',
+        ':core:test',
+
+        ':feature_profile_api',
+        ':feature_profile_impl',
+
+        ':feature_rate_tracker_api',
+        ':feature_rate_tracker_impl'
+
