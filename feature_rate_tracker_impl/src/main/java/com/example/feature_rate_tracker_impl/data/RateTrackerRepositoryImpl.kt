@@ -1,10 +1,9 @@
 package com.example.feature_rate_tracker_impl.data
 
 import android.util.Log
-import com.example.core.coroutine.onIo
-import com.example.core.data.datadelegate.Data
-import com.example.core.data.datadelegate.DataDelegate
-import com.example.core.data.datadelegate.DataManager
+import com.example.core.domain.datadelegate.Data
+import com.example.core.domain.datadelegate.DataDelegate
+import com.example.core.domain.datadelegate.DataManager
 import com.example.core.storage.daos.CurrenciesDao
 import com.example.core.storage.models.currency.CurrencyEntity
 import com.example.feature_rate_tracker_api.data.RateTrackerRepository
@@ -105,7 +104,7 @@ internal class RateTrackerRepositoryImpl @Inject constructor(
         delegate.observe(true, currency)
 
     override suspend fun getMainCurrency(): Currency? =
-        onIo {
+        com.example.core.streams.coroutine.onIo {
             currencyDao.get()
                 .let { currencies ->
                     currencies?.firstOrNull()?.let {

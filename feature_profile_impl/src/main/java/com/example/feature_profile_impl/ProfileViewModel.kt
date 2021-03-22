@@ -1,7 +1,5 @@
 package com.example.feature_profile_impl
 
-import com.example.core.routing.NavigationCommand
-import com.example.core.viewmodel.BaseViewModel
 import com.example.feature_profile_api.data.ProfileRepository
 import com.example.feature_profile_api.data.model.Profile
 import com.example.feature_profile_impl.ProfileScreenContract.ProfileIntent
@@ -14,7 +12,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val reducer: ProfileStateReducer,
     private val profileRepository: ProfileRepository
-) : BaseViewModel<ProfileState>(reducer) {
+) : com.example.core.domain.viewmodel.BaseViewModel<ProfileState>(reducer) {
 
     override suspend fun doInit() {
         intentOf<ProfileIntent.SaveProfile>()
@@ -29,7 +27,7 @@ class ProfileViewModel @Inject constructor(
 
             }
             .collectInScope {
-                navigate(NavigationCommand.Finish)
+                navigate(com.example.core.domain.routing.NavigationCommand.Finish)
             }
 
         profileRepository.getProfile()?.let { profile ->

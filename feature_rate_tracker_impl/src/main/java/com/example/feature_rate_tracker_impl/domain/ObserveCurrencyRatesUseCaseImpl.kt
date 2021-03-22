@@ -1,6 +1,6 @@
 package com.example.feature_rate_tracker_impl.domain
 
-import com.example.core.data.datadelegate.Data
+import com.example.core.domain.datadelegate.Data
 import com.example.feature_rate_tracker_api.data.RateTrackerRepository
 import com.example.feature_rate_tracker_api.data.models.Currency
 import com.example.feature_rate_tracker_api.domain.ObserveCurrencyRatesUseCase

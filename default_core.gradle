@@ -41,13 +41,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation ui.recyclerView
 
     implementation domain.kotlin
     implementation domain.ktxCore
-    implementation domain.lifecycleExtensions
     implementation domain.coroutines
-    implementation domain.lifecycleViewModel
     implementation domain.hilt
     kapt domain.hiltCompiler
 }

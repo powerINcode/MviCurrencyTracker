@@ -23,4 +23,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    dependencies {
+        implementation domain.coroutines
+        implementation core.domain
+    }
 }

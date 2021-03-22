@@ -12,6 +12,4 @@ dependencies {
     implementation data.room
     implementation data.roomCoroutine
     kapt data.roomCompiler
-
-    implementation core.core
 }

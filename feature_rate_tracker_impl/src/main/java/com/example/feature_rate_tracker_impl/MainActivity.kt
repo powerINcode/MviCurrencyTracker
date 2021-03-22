@@ -11,9 +11,9 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.example.core.activity.BaseActivity
-import com.example.core.activity.recyclerview.DelegateRecyclerViewAdapter
-import com.example.core.activity.viewbinding.viewBindings
+import com.example.core.ui.activity.BaseActivity
+import com.example.core.ui.recyclerview.DelegateRecyclerViewAdapter
+import com.example.core.ui.viewbinding.viewBindings
 import com.example.feature_rate_tracker_impl.MainScreenContract.*
 import com.example.feature_rate_tracker_impl.databinding.ActivityMainBinding
 import com.example.feature_rate_tracker_impl.delegates.AdvertisementDelegate

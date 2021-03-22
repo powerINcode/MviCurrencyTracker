@@ -5,6 +5,4 @@ dependencies {
     implementation data.gsonConverter
     implementation data.retrofitCoroutineAdapter
     implementation data.gson
-
-    implementation core.core
 }

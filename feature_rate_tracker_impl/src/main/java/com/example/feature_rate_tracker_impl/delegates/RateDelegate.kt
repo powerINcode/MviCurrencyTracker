@@ -4,8 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.core.activity.recyclerview.RecyclerViewDelegate
-import com.example.core.coroutine.mutableEventFlow
+import com.example.core.ui.recyclerview.RecyclerViewDelegate
 import com.example.feature_rate_tracker_api.data.models.Currency
 import com.example.feature_rate_tracker_impl.R
 import com.example.feature_rate_tracker_impl.databinding.ItemRateBinding
@@ -14,10 +13,10 @@ import kotlinx.coroutines.flow.SharedFlow
 
 class RateDelegate : RecyclerViewDelegate(R.layout.item_rate) {
 
-    private val _clickFlow: MutableSharedFlow<Model> = mutableEventFlow()
+    private val _clickFlow: MutableSharedFlow<Model> = com.example.core.streams.coroutine.mutableEventFlow()
     val clickFlow: SharedFlow<Model> = _clickFlow
 
-    private val _changeFlow: MutableSharedFlow<Double> = mutableEventFlow()
+    private val _changeFlow: MutableSharedFlow<Double> = com.example.core.streams.coroutine.mutableEventFlow()
     val changeFlow: SharedFlow<Double> = _changeFlow
 
     override fun suitFor(target: RecyclerViewDelegate.Model): Boolean = target is Model
@@ -34,7 +33,7 @@ class RateDelegate : RecyclerViewDelegate(R.layout.item_rate) {
 
     inner class Holder(
         view: View
-    ) : RecyclerViewDelegate.ViewHolder<Model, ItemRateBinding>(view) {
+    ) : ViewHolder<Model, ItemRateBinding>(view) {
 
         private var watcher: TextWatcher? = null
 

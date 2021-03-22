@@ -1,8 +1,9 @@
 rootProject.name = "RateTrackerTestSpeed"
 include ':app',
-        ':core',
+        ':core:ui',
+        ':core:domain',
+        ':core:streams',
         ':core:network',
-        ':core:data',
         ':core:storage',
         ':core:test',
 
@@ -11,4 +12,3 @@ include ':app',
 
         ':feature_rate_tracker_api',
         ':feature_rate_tracker_impl'
-

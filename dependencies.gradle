@@ -59,8 +59,10 @@ ext {
     core = [
             core   : project(":core"),
             network: project(":core:network"),
-            data   : project(":core:data"),
             storage: project(":core:storage"),
+            streams: project(":core:streams"),
+            domain : project(":core:domain"),
+            ui     : project(":core:ui"),
             test   : project(":core:test")
     ]
 }

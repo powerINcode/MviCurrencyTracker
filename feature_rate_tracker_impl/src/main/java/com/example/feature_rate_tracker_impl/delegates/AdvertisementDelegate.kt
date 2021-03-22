@@ -2,7 +2,7 @@ package com.example.feature_rate_tracker_impl.delegates
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.core.activity.recyclerview.RecyclerViewDelegate
+import com.example.core.ui.recyclerview.RecyclerViewDelegate
 import com.example.feature_rate_tracker_impl.R
 import com.example.feature_rate_tracker_impl.databinding.ItemAdvertisementBinding
 
