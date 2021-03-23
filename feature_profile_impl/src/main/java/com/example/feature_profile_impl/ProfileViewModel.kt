@@ -10,7 +10,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val reducer: ProfileReducer,
     private val profileRepository: ProfileRepository
-) : BaseViewModel<ProfileState>(reducer) {
+) : com.example.core.domain.viewmodel.BaseViewModel<ProfileState>(reducer) {
 
     override fun doInit() {
         intentOf<ProfileIntent.SaveProfile>()
@@ -24,7 +24,7 @@ class ProfileViewModel @Inject constructor(
                 )
                     .onMainThread()
                     .doOnComplete {
-                        navigate(NavigationCommand.Finish)
+                        navigate(com.example.core.domain.routing.NavigationCommand.Finish)
                     }
             }
 

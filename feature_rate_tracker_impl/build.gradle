@@ -5,8 +5,4 @@ dependencies {
     implementation feature.profileApi
 
     implementation data.room
-
-    implementation core.data
-    implementation core.network
-    implementation core.storage
 }

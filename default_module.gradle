@@ -37,11 +37,11 @@ dependencies {
 
     implementation data.retrofit
 
-    testImplementation test.junit
-    androidTestImplementation test.androidJunit
-    androidTestImplementation test.androidEspresso
-
-    implementation core.core
+    implementation core.ui
+    implementation core.storage
+    implementation core.streams
+    implementation core.network
+    implementation core.domain
 
     testImplementation test.junit
     testImplementation test.liveDataTest
@@ -49,4 +49,7 @@ dependencies {
     testImplementation test.mockitoInline
     testImplementation test.mockitoKotlin
     testImplementation core.test
+
+    androidTestImplementation test.androidJunit
+    androidTestImplementation test.androidEspresso
 }

@@ -31,7 +31,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation ui.recyclerView
 
     implementation domain.kotlin
     implementation domain.ktxCore

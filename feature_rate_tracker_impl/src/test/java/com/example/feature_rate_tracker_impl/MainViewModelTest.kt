@@ -1,7 +1,7 @@
 package com.example.feature_rate_tracker_impl
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.core.data.datadelegate.Data
+import com.example.core.domain.datadelegate.Data
 import com.example.core.test.RxJavaTestRule
 import com.example.core.test.thenEmit
 import com.example.core.test.thenEmitEmpty

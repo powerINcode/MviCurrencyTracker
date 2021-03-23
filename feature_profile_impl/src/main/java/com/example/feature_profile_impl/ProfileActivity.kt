@@ -1,8 +1,8 @@
 package com.example.feature_profile_impl
 
 import android.os.Bundle
-import com.example.core.activity.BaseActivity
-import com.example.core.activity.viewbinding.viewBindings
+import com.example.core.ui.activity.BaseActivity
+import com.example.core.ui.viewbinding.viewBindings
 import com.example.feature_profile_impl.databinding.ActivityProfileBinding
 import com.example.feature_profile_impl.di.ProfileActivityComponent
 import com.example.feature_profile_impl.di.ProfileFeatureComponent

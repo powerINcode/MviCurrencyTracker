@@ -8,6 +8,10 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
 
+    packagingOptions {
+        exclude 'META-INF/gradle/incremental.annotation.processors'
+    }
+
     defaultConfig {
         applicationId "com.example.ratetrackertestspeed"
         minSdkVersion 21
@@ -42,40 +46,28 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation ui.appcompat
-    implementation ui.constraintLayout
-    implementation ui.recyclerView
-    implementation ui.lifecycleFragment
 
+    implementation ui.appcompat
+    implementation data.retrofit
     implementation domain.kotlin
-    implementation domain.ktxCore
-    implementation domain.lifecycleExtensions
-    implementation domain.rxJava
-    implementation domain.rxJavaAndroid
-    implementation domain.rxJavaKotlin
-    implementation domain.lifecycleViewModel
     implementation domain.dagger
     implementation domain.daggerAndroid
     implementation domain.daggerSupport
     kapt domain.daggerProcessor
     kapt domain.daggerCompiler
 
-    implementation data.retrofit
-    implementation data.gsonConverter
-    implementation data.retrofitRxJava
-    implementation data.gson
-
-    testImplementation test.junit
-    androidTestImplementation test.androidJunit
-    androidTestImplementation test.androidEspresso
-
-    implementation core.core
+    implementation core.ui
     implementation core.network
     implementation core.storage
+    implementation core.domain
 
     implementation feature.rateTrackerApi
     implementation feature.rateTrackerImpl
 
     implementation feature.profileApi
     implementation feature.profileImpl
+
+    testImplementation test.junit
+    androidTestImplementation test.androidJunit
+    androidTestImplementation test.androidEspresso
 }

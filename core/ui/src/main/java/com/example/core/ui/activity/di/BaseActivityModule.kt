@@ -1,4 +1,4 @@
-package com.example.core.network.di.modules
+package com.example.core.ui.activity.di
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel

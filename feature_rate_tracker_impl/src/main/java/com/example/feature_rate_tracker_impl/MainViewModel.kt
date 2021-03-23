@@ -1,8 +1,6 @@
 package com.example.feature_rate_tracker_impl
 
 import androidx.annotation.VisibleForTesting
-import com.example.core.routing.NavigationCommand
-import com.example.core.viewmodel.BaseViewModel
 import com.example.feature_profile_api.declaration.ProfileFeatureConfig
 import com.example.feature_rate_tracker_api.domain.GetMainCurrencyRatesUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveAdvertisementUseCase
@@ -18,7 +16,7 @@ class MainViewModel @Inject constructor(
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase,
     private val observeAdvertisement: ObserveAdvertisementUseCase,
     private val getMainCurrency: GetMainCurrencyRatesUseCase
-) : BaseViewModel<RateTrackerState>(rateTrackerStateReducer) {
+) : com.example.core.domain.viewmodel.BaseViewModel<RateTrackerState>(rateTrackerStateReducer) {
 
     @Volatile
     @VisibleForTesting
@@ -27,7 +25,7 @@ class MainViewModel @Inject constructor(
     override fun doInit() {
         intentOf<RateTrackerIntent.NavigateToInfo>()
             .subscribeTillClear {
-                navigate(NavigationCommand.FeatureCommand(ProfileFeatureConfig))
+                navigate(com.example.core.domain.routing.NavigationCommand.FeatureCommand(ProfileFeatureConfig))
             }
 
         intentOf<RateTrackerIntent.AmountUpdated>()

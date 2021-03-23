@@ -1,7 +1,7 @@
 package com.example.feature_rate_tracker_impl.domain
 
-import com.example.core.data.datadelegate.Data
-import com.example.core.data.datadelegate.asCompleteData
+import com.example.core.domain.datadelegate.Data
+import com.example.core.domain.datadelegate.asCompleteData
 import com.example.feature_rate_tracker_api.data.models.Advertisement
 import com.example.feature_rate_tracker_api.domain.ObserveAdvertisementUseCase
 import io.reactivex.rxjava3.core.Observable

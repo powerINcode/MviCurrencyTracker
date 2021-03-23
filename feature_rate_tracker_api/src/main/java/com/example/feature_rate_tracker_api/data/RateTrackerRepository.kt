@@ -1,6 +1,6 @@
 package com.example.feature_rate_tracker_api.data
 
-import com.example.core.data.datadelegate.Data
+import com.example.core.domain.datadelegate.Data
 import com.example.feature_rate_tracker_api.data.models.Currency
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe

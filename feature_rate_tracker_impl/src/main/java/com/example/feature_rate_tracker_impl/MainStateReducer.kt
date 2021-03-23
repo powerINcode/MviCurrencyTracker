@@ -1,7 +1,7 @@
 package com.example.feature_rate_tracker_impl
 
-import com.example.core.activity.recyclerview.RecyclerViewDelegate
-import com.example.core.viewmodel.StateReducer
+import com.example.core.domain.viewmodel.StateReducer
+import com.example.core.ui.recyclerview.RecyclerViewDelegate
 import com.example.feature_rate_tracker_api.data.models.Advertisement
 import com.example.feature_rate_tracker_api.data.models.Currency
 import com.example.feature_rate_tracker_impl.MainScreenContract.RateTrackerState
