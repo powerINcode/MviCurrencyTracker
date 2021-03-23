@@ -1,0 +1,20 @@
+apply from: "../../default_core.gradle"
+
+dependencies {
+    implementation ui.appcompat
+
+    implementation domain.kotlin
+    implementation domain.lifecycleViewModel
+    implementation domain.lifecycle
+    implementation domain.dagger
+    implementation domain.daggerAndroid
+    implementation domain.daggerSupport
+    kapt domain.daggerProcessor
+    kapt domain.daggerCompiler
+
+    implementation core.streams
+
+    testImplementation core.test
+    testImplementation test.mockitoKotlin
+    testImplementation test.junit
+}

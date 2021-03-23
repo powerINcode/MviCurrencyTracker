@@ -1,0 +1,20 @@
+apply from: "../../default_core.gradle"
+
+android {
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation ui.appcompat
+    implementation ui.recyclerView
+    implementation ui.lifecycleFragment
+    implementation core.domain
+    implementation core.streams
+    implementation domain.dagger
+    implementation domain.daggerAndroid
+    implementation domain.daggerSupport
+    kapt domain.daggerProcessor
+    kapt domain.daggerCompiler
+}
