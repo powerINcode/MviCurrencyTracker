@@ -1,11 +1,10 @@
 package com.example.feature_profile_impl
 
-import com.example.core.routing.NavigationCommand
 import com.example.core.rx.onMainThread
-import com.example.core.viewmodel.BaseViewModel
 import com.example.feature_profile_api.data.ProfileRepository
 import com.example.feature_profile_api.data.model.Profile
-import com.example.feature_profile_impl.ProfileScreenContract.*
+import com.example.feature_profile_impl.ProfileScreenContract.ProfileIntent
+import com.example.feature_profile_impl.ProfileScreenContract.ProfileState
 import javax.inject.Inject
 
 class ProfileViewModel @Inject constructor(

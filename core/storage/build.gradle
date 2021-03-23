@@ -9,6 +9,8 @@ android {
     }
 }
 dependencies {
+    implementation core.domain
+
     implementation data.room
     implementation data.roomRxJava
     kapt data.roomCompiler

@@ -1,6 +1,6 @@
 package com.example.ratetrackertestspeed.di
 
-import com.example.core.routing.FeatureLaunchersProvider
+import com.example.core.domain.routing.FeatureLaunchersProvider
 import dagger.Component
 
 @Component(

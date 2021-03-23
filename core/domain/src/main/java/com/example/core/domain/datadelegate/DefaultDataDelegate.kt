@@ -1,4 +1,4 @@
-package com.example.core.data.datadelegate
+package com.example.core.domain.datadelegate
 
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe

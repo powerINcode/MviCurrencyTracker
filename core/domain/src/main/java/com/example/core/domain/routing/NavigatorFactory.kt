@@ -1,7 +1,7 @@
-package com.example.core.routing
+package com.example.core.domain.routing
 
 import androidx.appcompat.app.AppCompatActivity
-import com.example.core.di.CoreComponentProvider
+import com.example.core.domain.di.CoreComponentProvider
 
 object NavigatorFactory {
     fun create(activity: AppCompatActivity): Navigator {

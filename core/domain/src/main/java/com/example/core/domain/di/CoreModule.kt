@@ -1,7 +1,7 @@
-package com.example.core.network.di
+package com.example.core.domain.di
 
-import com.example.core.routing.FeatureLauncher
-import com.example.core.routing.FeatureLaunchersProvider
+import com.example.core.domain.routing.FeatureLauncher
+import com.example.core.domain.routing.FeatureLaunchersProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

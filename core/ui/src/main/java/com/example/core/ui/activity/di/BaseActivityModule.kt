@@ -4,10 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.core.di.scopes.ActivityScope
-import com.example.core.routing.Navigator
-import com.example.core.routing.NavigatorFactory
-import com.example.core.routing.NavigatorImpl
-import dagger.Binds
+import com.example.core.domain.routing.Navigator
+import com.example.core.domain.routing.NavigatorFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Provider

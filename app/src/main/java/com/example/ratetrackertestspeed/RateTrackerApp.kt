@@ -2,8 +2,8 @@ package com.example.ratetrackertestspeed
 
 import android.app.Application
 import com.example.core.application.ApiProvider
-import com.example.core.di.CoreComponent
-import com.example.core.di.CoreComponentProvider
+import com.example.core.domain.di.CoreComponent
+import com.example.core.domain.di.CoreComponentProvider
 import com.example.core.network.di.CoreNetworkApiProvider
 import com.example.core.storage.di.CoreStorageComponent
 import com.example.core.storage.di.CoreStorageProvider
