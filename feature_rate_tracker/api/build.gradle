@@ -1,0 +1,5 @@
+apply from: "../../default_module_api.gradle"
+
+dependencies {
+
+}

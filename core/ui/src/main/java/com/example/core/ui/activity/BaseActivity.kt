@@ -4,17 +4,19 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import com.example.core.domain.routing.Navigator
+import com.example.core.domain.viewmodel.BaseViewModel
 import com.example.core.streams.livedata.EventObserver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
-abstract class BaseActivity<State: Any, VM: com.example.core.domain.viewmodel.BaseViewModel<State>, ActivityBinding: ViewBinding>: AppCompatActivity() {
+abstract class BaseActivity<State: Any, VM: BaseViewModel<State>, ActivityBinding: ViewBinding>: AppCompatActivity() {
 
     protected abstract val viewBinding: ActivityBinding
 
     @Inject
-    lateinit var navigator: com.example.core.domain.routing.Navigator
+    lateinit var navigator: Navigator
 
     protected abstract val viewModel: VM
 

@@ -11,6 +11,7 @@ android {
 
     packagingOptions {
         exclude 'META-INF/gradle/incremental.annotation.processors'
+        exclude 'META-INF/*.kotlin_module'
     }
 
     defaultConfig {

@@ -1,0 +1,6 @@
+apply from: "../../default_module_api.gradle"
+
+dependencies {
+    implementation domain.coroutines
+    implementation core.domain
+}

@@ -1,5 +1,0 @@
-apply from: "../default_module.gradle"
-
-dependencies {
-    implementation feature.profileApi
-}
