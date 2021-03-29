@@ -7,10 +7,10 @@ import com.example.core.domain.di.CoreComponentProvider
 import com.example.core.network.di.CoreNetworkApiProvider
 import com.example.core.storage.di.CoreStorageComponent
 import com.example.core.storage.di.CoreStorageProvider
-import com.example.feature_profile_impl.di.ProfileFeatureComponent
-import com.example.feature_profile_impl.di.ProfileFeatureComponentProvider
-import com.example.feature_rate_tracker_impl.di.RateTrackerFeatureComponent
-import com.example.feature_rate_tracker_impl.di.RateTrackerFeatureComponentProvider
+import com.example.feature_profile.impl.di.ProfileFeatureComponent
+import com.example.feature_profile.impl.di.ProfileFeatureComponentProvider
+import com.example.feature_rate_tracker.impl.di.RateTrackerFeatureComponent
+import com.example.feature_rate_tracker.impl.di.RateTrackerFeatureComponentProvider
 import com.example.ratetrackertestspeed.di.ApplicationComponent
 import com.example.ratetrackertestspeed.di.DaggerApplicationComponent
 

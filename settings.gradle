@@ -6,9 +6,7 @@ include ':app',
         ':core:network',
         ':core:storage',
         ':core:test',
-
-        ':feature_profile_api',
-        ':feature_profile_impl',
-
-        ':feature_rate_tracker_api',
-        ':feature_rate_tracker_impl'
+        ':feature_rate_tracker:api',
+        ':feature_rate_tracker:impl',
+        ':feature_profile:api',
+        ':feature_profile:impl'

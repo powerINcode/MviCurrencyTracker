@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.ViewModel
 import com.example.core.domain.datadelegate.Data
 import com.example.core.domain.routing.NavigationCommand
+import com.example.core.streams.livedata.LiveEvent
+import com.example.core.streams.livedata.MutableLiveEvent
 import com.example.core.rx.toLiveData
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
@@ -24,9 +26,8 @@ abstract class BaseViewModel<State : Any>(
 
     protected val state: State get() = reducer.state
 
-    private val _navigation: com.example.core.streams.livedata.MutableLiveEvent<NavigationCommand> =
-        com.example.core.streams.livedata.MutableLiveEvent()
-    val navigation: com.example.core.streams.livedata.LiveEvent<NavigationCommand> get() = _navigation
+    private val _navigation: MutableLiveEvent<NavigationCommand> = MutableLiveEvent()
+    val navigation: LiveEvent<NavigationCommand> get() = _navigation
 
     protected val intentSubject = BehaviorSubject.create<Any>()
 

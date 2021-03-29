@@ -53,10 +53,10 @@ ext {
     ]
 
     feature = [
-            rateTrackerApi : project(":feature_rate_tracker_api"),
-            rateTrackerImpl: project(":feature_rate_tracker_impl"),
-            profileApi     : project(":feature_profile_api"),
-            profileImpl    : project(":feature_profile_impl"),
+            rateTrackerApi : project(":feature_rate_tracker:api"),
+            rateTrackerImpl: project(":feature_rate_tracker:impl"),
+            profileApi     : project(":feature_profile:api"),
+            profileImpl    : project(":feature_profile:impl"),
     ]
 
     core = [

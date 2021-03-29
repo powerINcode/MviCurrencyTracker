@@ -5,12 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.example.core.application.ApiProvider
+import com.example.core.domain.routing.Navigator
+import com.example.core.domain.viewmodel.BaseViewModel
 import com.example.core.streams.livedata.EventObserver
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 
-abstract class BaseActivity<Component: Any, State: Any, VM: com.example.core.domain.viewmodel.BaseViewModel<State>, ActivityBinding: ViewBinding>: AppCompatActivity() {
+abstract class BaseActivity<Component: Any, State: Any, VM: BaseViewModel<State>, ActivityBinding: ViewBinding>: AppCompatActivity() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     protected abstract val viewBinding: ActivityBinding
@@ -19,7 +21,7 @@ abstract class BaseActivity<Component: Any, State: Any, VM: com.example.core.dom
     lateinit var modelFactory: ViewModelProvider.Factory
 
     @Inject
-    lateinit var navigator: com.example.core.domain.routing.Navigator
+    lateinit var navigator: Navigator
 
     lateinit var component: Component
     protected val viewModel : VM by lazy { ViewModelProvider(this, modelFactory).get(getViewModelClass()) }
