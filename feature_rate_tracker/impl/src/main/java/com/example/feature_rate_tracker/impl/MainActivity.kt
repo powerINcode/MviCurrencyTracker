@@ -16,15 +16,20 @@ import com.example.core.ui.viewbinding.viewBindings
 import com.example.feature_rate_tracker.R
 import com.example.feature_rate_tracker.databinding.ActivityMainBinding
 import com.example.feature_rate_tracker.impl.MainScreenContract.*
+import com.example.feature_rate_tracker.impl.MainScreenContract.RateTrackerIntent.*
 import com.example.feature_rate_tracker.impl.delegates.AdvertisementDelegate
 import com.example.feature_rate_tracker.impl.delegates.RateDelegate
 import com.example.feature_rate_tracker.impl.di.RateTrackerActivityComponent
 import com.example.feature_rate_tracker.impl.di.RateTrackerFeatureComponent
+import javax.inject.Inject
 
 class MainActivity :
-    BaseActivity<RateTrackerActivityComponent, RateTrackerState, MainViewModel, ActivityMainBinding>() {
+    BaseActivity<RateTrackerActivityComponent, RateTrackerState, MainPresenter, MainViewModel>() {
 
     override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
+
+    @Inject
+    override lateinit var presenter: MainPresenter
 
     override val viewBinding: ActivityMainBinding by viewBindings(ActivityMainBinding::inflate)
 
@@ -54,7 +59,7 @@ class MainActivity :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.info) {
-            viewModel.send(RateTrackerIntent.NavigateToInfo)
+            presenter.send(NavigateToInfo)
             true
         } else {
             super.onOptionsItemSelected(item)
@@ -85,19 +90,10 @@ class MainActivity :
         }
 
         rateDelegate.clickFlow.subscribeTillDestroy {
-            viewModel.send(
-                RateTrackerIntent.CurrencySelected(
-                    it.extra,
-                    it.amount
-                )
-            )
+            presenter.send(CurrencySelected(it.extra, it.amount))
         }
         rateDelegate.changeFlow.subscribeTillDestroy {
-            viewModel.send(
-                RateTrackerIntent.AmountUpdated(
-                    it
-                )
-            )
+            presenter.send(AmountUpdated(it))
         }
     }
 

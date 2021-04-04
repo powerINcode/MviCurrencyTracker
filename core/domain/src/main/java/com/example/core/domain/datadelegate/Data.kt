@@ -1,5 +1,9 @@
 package com.example.core.domain.datadelegate
 
+import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.transformLatest
+
 sealed class Data<T> {
     abstract val content: T?
 
@@ -16,3 +20,30 @@ val <T> Data<T>.isError: Boolean get() = this is Data.Error
 val <T> Data<T>.isNotError: Boolean get() = this !is Data.Error
 val <T> Data<T>.loading: Boolean get() = this is Data.Loading
 val <T> Data<T>.complete: Boolean get() = this is Data.Complete
+
+fun <T> Observable<Data<T>>.extractContent(
+    dropCache: Boolean = false,
+    onError: (Throwable) -> Throwable? = { null },
+    onContentEmpty: () -> Unit = {},
+    onContentAvailable: (T) -> Unit = {},
+    onContentLoaded: (T) -> Unit = {},
+): Observable<T> {
+    return this.switchMap { data ->
+        Observable.create<T> { emitter ->
+            when (data) {
+                is Data.Error -> onError(data.error)?.let { emitter.onError(it) }
+                is Data.Loading -> data.content?.let { cache ->
+                    onContentAvailable(cache)
+                    if (!dropCache) {
+                        emitter.onNext(cache)
+                    }
+                } ?: onContentEmpty()
+                is Data.Complete -> {
+                    onContentAvailable(data.content)
+                    onContentLoaded(data.content)
+                    emitter.onNext(data.content)
+                }
+            }
+        }
+    }
+}

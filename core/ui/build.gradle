@@ -4,6 +4,8 @@ dependencies {
     implementation ui.appcompat
     implementation ui.lifecycleFragment
     implementation ui.recyclerView
+    implementation domain.rxJava
+    implementation domain.lifecycle
     kapt data.roomCompiler
 
     implementation core.domain

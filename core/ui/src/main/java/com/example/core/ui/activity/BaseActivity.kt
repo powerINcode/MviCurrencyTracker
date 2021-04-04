@@ -2,41 +2,33 @@ package com.example.core.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.example.core.application.ApiProvider
-import com.example.core.domain.routing.Navigator
-import com.example.core.domain.viewmodel.BaseViewModel
-import com.example.core.streams.livedata.EventObserver
+import com.example.core.ui.presenter.Presenter
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import javax.inject.Inject
 
-abstract class BaseActivity<Component: Any, State: Any, VM: BaseViewModel<State>, ActivityBinding: ViewBinding>: AppCompatActivity() {
+abstract class BaseActivity<Component: Any, State : Any, P : Presenter, VM: ViewModel> :
+    AppCompatActivity() {
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    protected abstract val viewBinding: ActivityBinding
+    protected abstract val viewBinding: ViewBinding
 
     @Inject
     lateinit var modelFactory: ViewModelProvider.Factory
 
-    @Inject
-    lateinit var navigator: Navigator
+    protected abstract var presenter: P
+
+    protected val viewModel : VM by lazy { ViewModelProvider(this, modelFactory).get(getViewModelClass()) }
 
     lateinit var component: Component
-    protected val viewModel : VM by lazy { ViewModelProvider(this, modelFactory).get(getViewModelClass()) }
 
     protected abstract fun getViewModelClass(): Class<VM>
     protected abstract fun createComponent(): Component
     protected abstract fun inject(component: Component)
-
-    override fun onStart() {
-        super.onStart()
-
-        viewModel.navigation.observe(this, EventObserver {
-            navigator.navigate(it)
-        })
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         component = createComponent()
@@ -45,14 +37,30 @@ abstract class BaseActivity<Component: Any, State: Any, VM: BaseViewModel<State>
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-        viewModel.stateFlow.observe(this, { render(it) })
-        viewModel.init()
+        presenter.onCreate(viewModel)
+
+        presenter.observeStateChange<State>(this) { render(it) }
+
+        presenter.onCreated()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        presenter.onAttach()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        presenter.onDetach()
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         compositeDisposable.clear()
+        presenter.onDestroy()
     }
 
     protected abstract fun render(state: State)

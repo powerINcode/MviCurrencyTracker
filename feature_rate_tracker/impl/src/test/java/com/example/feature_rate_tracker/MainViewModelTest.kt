@@ -5,12 +5,14 @@ import com.example.core.domain.datadelegate.Data
 import com.example.core.test.RxJavaTestRule
 import com.example.core.test.thenEmit
 import com.example.core.test.thenEmitEmpty
-import com.example.feature_rate_tracker_api.data.models.Currency
+import com.example.feature_rate_tracker.impl.MainScreenContract
+import com.example.feature_rate_tracker.impl.MainStateReducer
+import com.example.feature_rate_tracker.impl.MainViewModel
 import com.example.feature_rate_tracker_api.domain.GetMainCurrencyRatesUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveAdvertisementUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveCurrencyRatesUseCase
 import com.nhaarman.mockitokotlin2.*
-import io.reactivex.rxjava3.subjects.PublishSubject
+import junit.framework.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +31,7 @@ class MainViewModelTest {
     private val rateTrackerStateReducer: MainStateReducer = spy(MainStateReducer())
     private val observeAdvertisement: ObserveAdvertisementUseCase = mock()
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase = mock()
-    private val getMainCurrency: GetMainCurrencyRatesUseCase = mock()
+    private val getMainCurrencyUseCase: GetMainCurrencyRatesUseCase = mock()
 
     private lateinit var viewModel: MainViewModel
 
@@ -37,37 +39,36 @@ class MainViewModelTest {
     fun setup() {
         whenever(observeCurrencyRates.invoke(any()))
             .thenEmit(Data.Complete(emptyList()))
-        whenever(getMainCurrency()).thenEmitEmpty()
+        whenever(getMainCurrencyUseCase()).thenEmitEmpty()
 
         viewModel = MainViewModel(
             rateTrackerStateReducer = rateTrackerStateReducer,
             observeCurrencyRates = observeCurrencyRates,
-            getMainCurrency = getMainCurrency,
+            getMainCurrencyUseCase = getMainCurrencyUseCase,
             observeAdvertisement = observeAdvertisement
         ).apply { infinityLoading = false }
 
     }
 
     @Test
+    fun testGetInitialCurrency() {
+        viewModel.getInitialCurrency()
+
+        verify(getMainCurrencyUseCase).invoke()
+    }
+
+    @Test
+    fun testGetInitialCurrencyAmount() {
+        assertEquals(viewModel.getInitialCurrencyAmount(), MainScreenContract.RateTrackerState.EMPTY.amount)
+    }
+
+    @Test
     fun `state | initiation`() {
-        val defaultCurrency = MainScreenContract.RateTrackerState.EMPTY.currency
-        val defaultAmount = MainScreenContract.RateTrackerState.EMPTY.amount
-        val testObservable = PublishSubject.create<Data<List<Currency>>>()
-        whenever(observeCurrencyRates.invoke(any())).thenReturn(testObservable)
+        whenever(observeAdvertisement.invoke())
+            .thenEmit(Data.Complete(emptyList()))
 
         viewModel.init()
 
-        verify(getMainCurrency).invoke()
-        verify(rateTrackerStateReducer).selectCurrency(defaultCurrency, defaultAmount)
-        verify(observeCurrencyRates).invoke(defaultCurrency.name)
-
-        testObservable.onNext(Data.Loading(null))
-        testObservable.onNext(Data.Complete(emptyList()))
-
-        verify(rateTrackerStateReducer).selectCurrency(defaultCurrency, defaultAmount)
-        verify(rateTrackerStateReducer).startLoadingRates()
-        verify(rateTrackerStateReducer).ratesLoaded(any())
-
-
+        verify(observeAdvertisement).invoke()
     }
 }

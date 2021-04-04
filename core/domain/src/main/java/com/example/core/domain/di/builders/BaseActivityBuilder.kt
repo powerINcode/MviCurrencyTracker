@@ -1,4 +1,4 @@
-package com.example.core.di.builders
+package com.example.core.domain.di.builders
 
 import androidx.appcompat.app.AppCompatActivity
 import dagger.BindsInstance

@@ -1,5 +1,6 @@
 package com.example.core.domain
 
+import com.example.core.domain.datadelegate.Data
 import com.example.core.test.*
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
@@ -34,7 +35,7 @@ class DataManagerTest {
         testObserver.assertNoErrors()
         testObserver.assertValueCount(2)
         testObserver.assertValueAt(0, com.example.core.domain.datadelegate.Data.Loading())
-        testObserver.assertValueAt(1, com.example.core.domain.datadelegate.Data.Complete(Unit))
+        testObserver.assertValueAt(1, Data.Complete(Unit))
 
         verify(delegate).getFromMemory()
         verify(delegate).getFromStorage()
@@ -72,7 +73,7 @@ class DataManagerTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0, com.example.core.domain.datadelegate.Data.Complete(Unit))
+        testObserver.assertValueAt(0, Data.Complete(Unit))
 
         verify(delegate).getFromMemory()
         verify(delegate).getFromStorage()
@@ -91,7 +92,7 @@ class DataManagerTest {
 
         testObserver.assertNoErrors()
         testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0, com.example.core.domain.datadelegate.Data.Complete(Unit))
+        testObserver.assertValueAt(0, Data.Complete(Unit))
 
         verify(delegate).getFromMemory()
         verify(delegate, never()).getFromStorage()
@@ -144,7 +145,7 @@ class DataManagerTest {
         verify(delegate).putToMemory(Unit)
         verify(delegate).putToStorage(Unit)
 
-        testObserver.assertValueAt(1, com.example.core.domain.datadelegate.Data.Complete(Unit))
+        testObserver.assertValueAt(1, Data.Complete(Unit))
 
     }
 }
