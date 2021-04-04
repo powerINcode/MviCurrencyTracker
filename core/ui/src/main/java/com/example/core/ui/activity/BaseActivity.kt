@@ -1,40 +1,54 @@
 package com.example.core.ui.activity
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
-import com.example.core.domain.routing.Navigator
-import com.example.core.domain.viewmodel.BaseViewModel
-import com.example.core.streams.livedata.EventObserver
+import com.example.core.ui.presenter.Presenter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import javax.inject.Inject
 
-abstract class BaseActivity<State: Any, VM: BaseViewModel<State>, ActivityBinding: ViewBinding>: AppCompatActivity() {
+abstract class BaseActivity<State : Any, P : Presenter, VM: ViewModel> :
+    AppCompatActivity() {
 
-    protected abstract val viewBinding: ActivityBinding
+    protected abstract val viewBinding: ViewBinding
 
-    @Inject
-    lateinit var navigator: Navigator
+    protected abstract var presenter: P
 
     protected abstract val viewModel: VM
-
-    override fun onStart() {
-        super.onStart()
-
-        viewModel.navigation.observe(this, EventObserver {
-            navigator.navigate(it)
-        })
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-        viewModel.stateFlow.observe(this, { render(it) })
-        viewModel.init()
+        presenter.onCreate(lifecycleScope, viewModel)
+
+        presenter.observeStateChange<State>(this) { render(it) }
+
+        presenter.onCreated()
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        presenter.onAttach()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        presenter.onDetach()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        presenter.onDestroy()
+    }
+
+    protected inline fun <reified T : ViewModel> activityViewModel() = this.viewModels<T>().value
 
     protected abstract fun render(state: State)
 

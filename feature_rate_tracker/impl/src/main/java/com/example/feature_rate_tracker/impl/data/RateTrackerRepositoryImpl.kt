@@ -43,8 +43,13 @@ internal class RateTrackerRepositoryImpl @Inject constructor(
         }
 
         override suspend fun getFromNetwork(params: String): List<Currency> {
-            Log.e("DOD", "getFromNetwork")
-            return service.latest(params)
+//            Log.e("DOD", "getFromNetwork")
+            val start = System.currentTimeMillis()
+            Log.e("AAA", "start")
+            val latest = service.latest(params)
+            Log.e("AAA", "end")
+            Log.e("AAA", "${System.currentTimeMillis() - start}")
+            val let = latest
                 .let {
                     listOf(
                         Currency(
@@ -96,6 +101,8 @@ internal class RateTrackerRepositoryImpl @Inject constructor(
                         Collections.swap(this, indexOfFirst { it.name == params }, 0)
                     }
                 }
+            Log.e("AAA", "$let")
+            return let
         }
 
     })

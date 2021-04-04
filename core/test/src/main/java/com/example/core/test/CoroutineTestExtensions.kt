@@ -4,6 +4,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.mockito.stubbing.OngoingStubbing
 
 @ExperimentalCoroutinesApi
@@ -14,6 +16,14 @@ suspend fun <T> Flow<T>.test(scope: CoroutineScope, block: (suspend TestObserver
             finish()
         }
     }
+}
+// TODO think about this
+fun <T> Flow<T>.collectToList(scope: CoroutineScope): List<T> {
+    val list = mutableListOf<T>()
+    onEach { list.add(it) }
+        launchIn(scope)
+
+    return list
 }
 
 fun <T> OngoingStubbing<T>.thenReturnEmpty(): OngoingStubbing<T?> = this.thenReturn(null)

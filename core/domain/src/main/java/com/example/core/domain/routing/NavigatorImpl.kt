@@ -14,13 +14,13 @@ class NavigatorImpl @Inject constructor(
 
     override fun navigate(command: NavigationCommand) {
         when (command) {
-            is NavigationCommand.FeatureCommand -> {
+            is FeatureCommand -> {
                 launchers
                     .firstOrNull { it.suitFor(command.config) }
                     ?.launch(this, command.config)
             }
-            is NavigationCommand.Finish -> activity.finish()
-            is NavigationCommand.ActivityCommand<*> -> activity.startActivity(Intent(activity, command.destination))
+            is Finish -> activity.finish()
+            is ActivityCommand<*> -> activity.startActivity(Intent(activity, command.destination))
         }.let{}
     }
 

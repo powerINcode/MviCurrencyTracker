@@ -3,14 +3,13 @@ package com.example.core.domain
 import com.example.core.test.*
 import com.nhaarman.mockitokotlin2.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class DataManagerTest {
-    @ObsoleteCoroutinesApi
     @ExperimentalCoroutinesApi
     @Rule
     @JvmField

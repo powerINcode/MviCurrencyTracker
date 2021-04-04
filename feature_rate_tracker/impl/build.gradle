@@ -6,4 +6,9 @@ dependencies {
     implementation feature.profileApi
 
     implementation data.room
+
+    testImplementation test.junit
+    testImplementation test.coroutinesTest
+    testImplementation test.mockitoKotlin
+    testImplementation core.test
 }

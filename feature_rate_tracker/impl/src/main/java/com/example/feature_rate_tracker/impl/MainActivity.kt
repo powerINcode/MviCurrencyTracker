@@ -17,15 +17,21 @@ import com.example.core.ui.viewbinding.viewBindings
 import com.example.feature_rate_tracker.R
 import com.example.feature_rate_tracker.databinding.ActivityMainBinding
 import com.example.feature_rate_tracker.impl.MainScreenContract.*
+import com.example.feature_rate_tracker.impl.MainScreenContract.RateTrackerIntent.*
 import com.example.feature_rate_tracker.impl.delegates.AdvertisementDelegate
 import com.example.feature_rate_tracker.impl.delegates.RateDelegate
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity<RateTrackerState, MainViewModel, ActivityMainBinding>() {
+class MainActivity : BaseActivity<RateTrackerState, MainPresenter, MainViewModel>() {
+
     override val viewBinding: ActivityMainBinding by viewBindings(ActivityMainBinding::inflate)
 
-    override val viewModel by viewModels<MainViewModel>()
+    @Inject
+    override lateinit var presenter: MainPresenter
+
+    override val viewModel: MainViewModel by viewModels()
 
     private val rateDelegate = RateDelegate()
 
@@ -43,7 +49,7 @@ class MainActivity : BaseActivity<RateTrackerState, MainViewModel, ActivityMainB
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.info) {
-            viewModel.send(RateTrackerIntent.NavigateToInfo)
+            presenter.send(NavigateToInfo)
             true
         } else {
             super.onOptionsItemSelected(item)
@@ -73,8 +79,12 @@ class MainActivity : BaseActivity<RateTrackerState, MainViewModel, ActivityMainB
             })
         }
 
-        rateDelegate.clickFlow.collectWhenCreated { viewModel.send(RateTrackerIntent.CurrencySelected(it.extra, it.amount)) }
-        rateDelegate.changeFlow.collectWhenCreated { viewModel.send(RateTrackerIntent.AmountUpdated(it)) }
+        rateDelegate.clickFlow.collectWhenCreated {
+            presenter.send(CurrencySelected(it.extra, it.amount))
+        }
+        rateDelegate.changeFlow.collectWhenCreated {
+            presenter.send(AmountUpdated(it))
+        }
     }
 
     override fun render(state: RateTrackerState) {

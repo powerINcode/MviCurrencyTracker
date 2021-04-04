@@ -1,87 +1,67 @@
 package com.example.feature_rate_tracker.impl
 
 import androidx.annotation.VisibleForTesting
+import com.example.core.domain.datadelegate.Data
+import com.example.core.domain.datadelegate.extractContent
+import com.example.core.domain.datadelegate.loading
+import com.example.core.domain.viewmodel.BaseViewModel
 import com.example.feature_rate_tracker.impl.MainScreenContract.*
+import com.example.feature_rate_tracker_api.data.models.Advertisement
+import com.example.feature_rate_tracker_api.data.models.Currency
 import com.example.feature_rate_tracker_api.domain.GetMainCurrencyRatesUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveAdvertisementUseCase
 import com.example.feature_rate_tracker_api.domain.ObserveCurrencyRatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.isActive
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val reducer: MainStateReducer,
+    reducer: MainStateReducer,
     private val observeCurrencyRates: ObserveCurrencyRatesUseCase,
     private val observeAdvertisement: ObserveAdvertisementUseCase,
-    private val getMainCurrency: GetMainCurrencyRatesUseCase
-) : com.example.core.domain.viewmodel.BaseViewModel<RateTrackerState>(reducer) {
+    private val getMainCurrencyUseCase: GetMainCurrencyRatesUseCase
+) : BaseViewModel<RateTrackerState, MainStateReducer>(reducer) {
 
     @Volatile
     @VisibleForTesting
     var infinityLoading: Boolean = true
 
-    @ExperimentalCoroutinesApi
+    private val _advertisementFlow = MutableStateFlow<List<Advertisement>>(emptyList())
+    val advertisementFlow: Flow<List<Advertisement>> = _advertisementFlow
+
     override suspend fun doInit() {
-        intentOf<RateTrackerIntent.NavigateToInfo>()
-            .collectInScope {
-                navigate(com.example.core.domain.routing.NavigationCommand.FeatureCommand(com.example.feature_profile.api.declaration.ProfileFeatureConfig))
-            }
-
-        intentOf<RateTrackerIntent.AmountUpdated>()
-            .map { it.amount }
-            .onEach { reducer.updateAmount(it) }
-            .collectInScope()
-
         observeAdvertisement()
             .extractContent(dropCache = true)
-            .collectInScope {
-                reducer.addAdvertisements(it)
-            }
-
-
-        intentOf<RateTrackerIntent.CurrencySelected>()
-            .onStart {
-                val currency = getMainCurrency() ?: state.currency
-                emit(RateTrackerIntent.CurrencySelected(currency, state.amount))
-            }
-            .onEach { reducer.selectCurrency(it.currency, it.amount) }
-            .map { it.currency }
-            .flatMapLatest { currency ->
-                observeCurrencyRates(currency.name)
-                    .extractContent(
-                        dropCache = true,
-                        onError = { e ->
-                            reducer.ratesLoadingError()
-                            e
-                        },
-                        onContentEmpty = {
-                            reducer.startLoadingRates()
-                        },
-                        onContentAvailable = {
-                            reducer.ratesLoaded(it)
-                        }
-                    )
-                    .retryWhen { _, _ ->
-                        delay(RETRY_DELAY)
-                        true
-
-                    }
-                    .take(1)
-                    .repeatWithDelay(RETRY_DELAY)
-            }
-            .collectInScope()
+            .onEach(_advertisementFlow::emit)
+            .launchInScope()
     }
 
-    private suspend fun <T> Flow<T>.repeatWithDelay(delay: Long) =
+    suspend fun getInitialCurrency(): Currency = getMainCurrencyUseCase() ?: _state.currency
+
+    fun getInitialCurrencyAmount(): Double = _state.amount
+
+    suspend fun observeLatestCurrenciesFor(currency: Currency): Flow<Data<List<Currency>>> {
+        return observeCurrencyRates(currency.name)
+            .retryWhen { _, _ ->
+                delay(RETRY_DELAY)
+                true
+            }
+            .transformWhile { data ->
+                emit(data)
+                data.loading
+            }
+            .repeatWithDelay(RETRY_DELAY)
+    }
+
+    private suspend fun <T> Flow<Data<T>>.repeatWithDelay(delay: Long) =
         if (infinityLoading) {
             flow {
                 while (currentCoroutineContext().isActive) {
-                    this@repeatWithDelay.collect { emit(it) }
+                    this@repeatWithDelay.collect {
+                        emit(it)
+                    }
                     delay(delay)
                 }
 
@@ -93,4 +73,6 @@ class MainViewModel @Inject constructor(
     companion object {
         private const val RETRY_DELAY = 1000L
     }
+
+
 }

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 abstract class StateReducer<State: Any>(initialState: State) {
     private val _stateFlow: MutableStateFlow<State> = MutableStateFlow(initialState)
-    val stateFlow: StateFlow<State> = _stateFlow
+    val stateLiveData: StateFlow<State> = _stateFlow
 
     val state: State
         get() = _stateFlow.value

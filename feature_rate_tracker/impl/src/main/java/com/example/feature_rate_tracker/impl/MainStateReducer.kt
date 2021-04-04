@@ -23,7 +23,7 @@ class MainStateReducer @Inject constructor() : StateReducer<RateTrackerState>(Ra
         state.copy(loading = false).commit()
 
         val updatedCurrencies = when {
-            state.currencies.size == 1 -> {
+            state.currencies.size <= 1 -> {
                 newCurrencies
             }
             else -> state.currencies.map { currency ->

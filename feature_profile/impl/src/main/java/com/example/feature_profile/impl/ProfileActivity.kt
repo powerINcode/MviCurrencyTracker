@@ -4,14 +4,20 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import com.example.core.ui.activity.BaseActivity
 import com.example.core.ui.viewbinding.viewBindings
+import com.example.feature_profile.impl.ProfileScreenContract.ProfileIntent
+import com.example.feature_profile.impl.ProfileScreenContract.ProfileState
 import com.example.feature_profile.impl.databinding.ActivityProfileBinding
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProfileActivity :
-    BaseActivity<ProfileScreenContract.ProfileState, ProfileViewModel, ActivityProfileBinding>() {
+    BaseActivity<ProfileState, ProfilePresenter, ProfileViewModel>() {
 
     override val viewBinding: ActivityProfileBinding by viewBindings(ActivityProfileBinding::inflate)
+
+    @Inject
+    override lateinit var presenter: ProfilePresenter
 
     override val viewModel: ProfileViewModel by viewModels()
 
@@ -20,8 +26,8 @@ class ProfileActivity :
 
         with(viewBinding) {
             profileSaveButton.setOnClickListener {
-                viewModel.send(
-                    ProfileScreenContract.ProfileIntent.SaveProfile(
+                presenter.send(
+                    ProfileIntent.SaveProfile(
                         first = profileFirstEditText.text.toString(),
                         second = profileLastEditText.text.toString(),
                         last = profileSecondEditText.text.toString()
@@ -31,7 +37,7 @@ class ProfileActivity :
         }
     }
 
-    override fun render(state: ProfileScreenContract.ProfileState) {
+    override fun render(state: ProfileState) {
         with(viewBinding) {
             profileFirstEditText.setText(state.first)
             profileLastEditText.setText(state.last)
